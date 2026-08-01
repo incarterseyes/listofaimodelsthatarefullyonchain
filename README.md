@@ -48,9 +48,13 @@ visitor's browser to the public Ethereum RPC endpoints listed in
 
 ## Deploy
 
+Every push to `main` builds the static export and publishes it to GitHub Pages
+via [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+
 Set `NEXT_PUBLIC_SITE_URL` to the exact production origin when building a public
-release. Canonical and Open Graph URLs are omitted when it is unset, which keeps
-preview builds from claiming the production domain.
+release (the deploy workflow does this). Canonical and Open Graph URLs are
+omitted when it is unset, which keeps preview builds from claiming the
+production domain.
 
 The exported asset URLs assume the site is hosted at an origin root. A subpath
 deployment requires a matching Next.js `basePath` configuration and rebuild.
