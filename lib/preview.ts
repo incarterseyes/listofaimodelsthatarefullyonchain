@@ -17,6 +17,14 @@ export type DecodedPreview =
       heading: string;
       header: [string, string];
       rows: [string, string][];
+    }
+  | {
+      // A data: URI rendered via <img>. Never an external URL — previews
+      // must not trigger network requests beyond the verified call itself.
+      kind: "figure";
+      heading: string;
+      src: string;
+      caption?: string;
     };
 
 const HEX_BYTES = /^0x(?:[0-9a-fA-F]{2})*$/;
@@ -42,6 +50,28 @@ function wordHex(bytes: Uint8Array, index: number): string {
   return `0x${Array.from(bytes.slice(index * 32, index * 32 + 32), (byte) =>
     byte.toString(16).padStart(2, "0"),
   ).join("")}`;
+}
+
+// Decodes a single ABI-encoded dynamic string return value.
+function abiString(bytes: Uint8Array): string | null {
+  if (bytes.length < 64) return null;
+  if (wordAt(bytes, 0) !== 32n) return null;
+  const length = wordAt(bytes, 1);
+  if (length > 10_000_000n || bytes.length < 64 + Number(length)) return null;
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(
+      bytes.slice(64, 64 + Number(length)),
+    );
+  } catch {
+    return null;
+  }
+}
+
+function base64Encode(text: string): string {
+  const utf8 = new TextEncoder().encode(text);
+  let binary = "";
+  for (const byte of utf8) binary += String.fromCharCode(byte);
+  return btoa(binary);
 }
 
 export function decodePreview(
@@ -129,6 +159,44 @@ export function decodePreview(
           `WORD ${index}`,
           wordHex(bytes, index),
         ]),
+      };
+    }
+
+    case "svg": {
+      const svg = abiString(bytes);
+      if (!svg || !svg.trimStart().startsWith("<svg")) return null;
+      // Rendered via <img>, where browsers do not execute scripts or load
+      // external resources referenced by the SVG.
+      return {
+        kind: "figure",
+        heading: "ONCHAIN SVG",
+        src: `data:image/svg+xml;base64,${base64Encode(svg)}`,
+      };
+    }
+
+    case "token-uri": {
+      const uri = abiString(bytes);
+      const prefix = "data:application/json;base64,";
+      if (!uri || !uri.startsWith(prefix)) return null;
+      let metadata: unknown;
+      try {
+        metadata = JSON.parse(atob(uri.slice(prefix.length)));
+      } catch {
+        return null;
+      }
+      if (!metadata || typeof metadata !== "object") return null;
+      const record = metadata as Record<string, unknown>;
+      const image = record.image;
+      // Only self-contained data: images qualify; an https image would be
+      // offchain content and must not be fetched or rendered.
+      if (typeof image !== "string" || !image.startsWith("data:image/")) {
+        return null;
+      }
+      return {
+        kind: "figure",
+        heading: "ONCHAIN TOKEN METADATA",
+        src: image,
+        caption: typeof record.name === "string" ? record.name : undefined,
       };
     }
   }

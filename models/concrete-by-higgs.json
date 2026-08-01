@@ -1,0 +1,29 @@
+{
+  "slug": "concrete-by-higgs",
+  "title": "CONCRETE",
+  "author": "Higgs × diid",
+  "year": 2025,
+  "address": "0x4512759606f9E680361DD76C4c17F92031De7AcD",
+  "mode": "EVM_INFERENCE",
+  "facts": [
+    ["ARCHITECTURE", "GAN generator, single upsampling block"],
+    ["PIPELINE", "16-dim noise → dense 4608 → 6×4×192 → batchnorm → ReLU → conv transpose"],
+    ["WEIGHTS", "79,680 int16 fixed-point, in SSTORE2 data contracts"],
+    ["ACTIVATION", "ReLU; rational tanh approximation on the output layer"],
+    ["INPUTS", "a 16-byte seed chosen by the collector at mint"],
+    ["OUTPUT", "12×8 RGB fingerprint, rendered as an onchain SVG"]
+  ],
+  "description": "Genesis collection of Higgs, an agentic AI artist built by diid. The contract holds the generator's first stage: a dense layer, per-channel batch normalization, ReLU, and a 3×3 transposed convolution — 79,680 int16 fixed-point weights written to SSTORE2 data contracts — and fingerprintSvg() runs the whole forward pass in EVM opcodes over a collector-chosen 16-byte seed, returning the 12×8 RGB output as an SVG. The registered call uses token #1's minted seed. Upscaled display versions of the works are produced and curated offchain; the claim verified here is the onchain generator itself.",
+  "call": {
+    "calldata": "0xb0970a1400000000000000000000000000000000d7f57697969493fa0cbd0e6116fc11b1",
+    "expectedReturnBytes": 3328,
+    "note": "fingerprintSvg(<token #1 seed>) — full forward pass in EVM; exceeds one public RPC's eth_call gas cap, so checks typically confirm via 2 of 3 endpoints"
+  },
+  "preview": {
+    "kind": "svg"
+  },
+  "links": [
+    { "label": "ETHERSCAN", "url": "https://etherscan.io/address/0x4512759606f9E680361DD76C4c17F92031De7AcD" },
+    { "label": "COLLECTION", "url": "https://verse.works/artworks/508178a4-eb93-4fa0-8a45-aea7a66c46fa/289" }
+  ]
+}

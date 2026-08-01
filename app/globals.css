@@ -264,7 +264,8 @@ table.simple tbody th{color:var(--theme-text)}
 
 /* ── Output preview ─────────────────────────── */
 
-.preview-canvas{
+.preview-canvas,
+.preview-image{
   display:block;
   margin-top:var(--theme-line-height-base);
   width:24ch;

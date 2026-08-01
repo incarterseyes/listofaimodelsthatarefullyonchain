@@ -60,6 +60,18 @@ export function OutputPreview({
       <p className="text dim">DECODED OUTPUT · {decoded.heading}</p>
       {decoded.kind === "image" ? (
         <ImagePreview decoded={decoded} />
+      ) : decoded.kind === "figure" ? (
+        <>
+          {/* src is always a data: URI decoded from the verified bytes;
+              browsers do not run scripts inside <img> content. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="preview-image"
+            src={decoded.src}
+            alt={`Decoded onchain output${decoded.caption ? `: ${decoded.caption}` : ""}`}
+          />
+          {decoded.caption && <p className="text dim">{decoded.caption}</p>}
+        </>
       ) : (
         <SimpleTable
           caption={`Decoded output: ${decoded.heading}`}

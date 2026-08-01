@@ -76,6 +76,10 @@ renders the decoded result. Pick the `kind` matching your call's return type
   `{ "kind": "fields", "fields": [{ "label": "OUTPUT", "type": "bool" }] }`
 - `logits` — ABI dynamic array of signed logits; shows the top-scoring token
   indices. `{ "kind": "logits", "topK": 5 }`
+- `svg` — ABI-encoded string containing an SVG document; rendered as an image.
+- `token-uri` — ABI-encoded string containing base64 ERC-721 JSON metadata;
+  renders the embedded image. The image must be a self-contained `data:` URI —
+  metadata pointing at an offchain image will not render.
 - `words` — fallback that lists each 32-byte word.
 
 Validation checks the preview against `expectedReturnBytes`. Add a `note`

@@ -1,0 +1,31 @@
+{
+  "slug": "inchainpepegan",
+  "title": "INCHAINPEPEGAN",
+  "author": "lifeonchain",
+  "year": 2023,
+  "address": "0x65e9A5BbC1B26C0833B232355534cC404b0e69D4",
+  "mode": "EVM_INFERENCE",
+  "facts": [
+    ["ARCHITECTURE", "DCGAN-style generator"],
+    ["PIPELINE", "16-dim latent → dense → 2× conv → 5×5 RGB"],
+    ["WEIGHTS", "int16 fixed-point, in contract storage"],
+    ["PARAMETERS", "≈2,900"],
+    ["ACTIVATION", "256-entry logistic lookup table"],
+    ["TRAINING", "offchain — GAN trained on pepes, generator ported to Solidity"],
+    ["OUTPUT", "three 5×5 frames, assembled onchain into an animated GIF"]
+  ],
+  "description": "A GAN generator that draws animated pepes inside tokenURI. Each call derives three latent seeds from the token id, runs each through a dense layer and two transposed-convolution stages in int16 fixed-point arithmetic (1 sign, 3 mantissa, 12 fraction bits) with a 256-entry logistic lookup table, and encodes the three 5×5 RGB frames as an animated GIF — all in Solidity. The weights were trained offchain, then written into the contract's storage arrays in the deployment transactions; weights, forward pass, and GIF encoder all live at one address and the image exists nowhere else.",
+  "call": {
+    "calldata": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000001",
+    "expectedReturnBytes": 5536,
+    "note": "tokenURI(1) — runs the generator three times (one per frame) and assembles the animated GIF onchain"
+  },
+  "preview": {
+    "kind": "token-uri"
+  },
+  "links": [
+    { "label": "ETHERSCAN", "url": "https://etherscan.io/address/0x65e9a5bbc1b26c0833b232355534cc404b0e69d4" },
+    { "label": "GITHUB", "url": "https://github.com/InChainPepeGAN/InChainPepeGAN" },
+    { "label": "WRITEUP", "url": "https://paragraph.com/@lifeonchain-nft/how-far-can-on-chain-ai-go" }
+  ]
+}

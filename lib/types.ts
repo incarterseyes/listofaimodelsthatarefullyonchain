@@ -12,7 +12,9 @@ export type OutputPreview =
       note?: string;
     }
   | { kind: "logits"; topK: number; note?: string }
-  | { kind: "words"; note?: string };
+  | { kind: "words"; note?: string }
+  | { kind: "svg"; note?: string }
+  | { kind: "token-uri"; note?: string };
 
 export interface ModelEntry {
   slug: string;
