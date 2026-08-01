@@ -1,0 +1,33 @@
+{
+  "slug": "the-market-is-talking",
+  "title": "THE MARKET IS TALKING",
+  "author": "FelixFelixFelix",
+  "year": 2026,
+  "address": "0xd6D8555E131c0C431601aF62141A61a9b1aa6b13",
+  "mode": "ONCHAIN_RENDERER",
+  "facts": [
+    ["ARCHITECTURE", "two-layer deep echo-state network"],
+    ["NEURONS", "20 hidden (two baskets of 10 ERC-20 markets), 4 inputs"],
+    ["WEIGHTS", "derived each block from market correlations, not stored"],
+    ["RENDERER", "engine.js + renderer.js on EthFS, served via scripty.sol"],
+    ["MATH", "fixed-point BigInt, integer tanh — bit-reproducible"],
+    ["OUTPUT", "one deterministic oracular sentence per block"]
+  ],
+  "description": "A recurrent neural network whose body is the market itself: two curated baskets of live ERC-20 markets act as the hidden layers of a deep echo-state network, with recurrent matrices rebuilt every block from the Pearson correlations of their transfer activity and a readout that projects the state onto a 299-word vocabulary through a five-layer deterministic grammar. No weights are stored — they are re-derived, bit-for-bit, from sealed chain history by the renderer, whose engine is gzip-compressed JavaScript on EthFS assembled by scripty.sol from this ERC-721 instrument. The instrument holds the append-only inputs and mood logs; stateAt() reconstructs the exact state in force at any past block, which is what makes every reading of the oracle reproducible mark for mark.",
+  "call": {
+    "calldata": "0xeff86f130000000000000000000000000000000000000000000000000000000001869f00",
+    "expectedReturnBytes": 416,
+    "note": "stateAt(25599744) — returns the pinned inputs + mood state from which the engine deterministically re-derives the network"
+  },
+  "preview": {
+    "kind": "words",
+    "note": "Pinned inputs and mood state. The onchain renderer re-derives the network and its sentence from these words client-side."
+  },
+  "links": [
+    { "label": "SITE", "url": "https://felixfelixfelix.com/tmit" },
+    { "label": "INSTRUMENT", "url": "https://etherscan.io/address/0xd6D8555E131c0C431601aF62141A61a9b1aa6b13" },
+    { "label": "RENDERER", "url": "https://etherscan.io/address/0x0BDC00fe1d7924dd5893B092B7ed0e3ABcceCEF5" },
+    { "label": "SOURCIFY", "url": "https://sourcify.dev/server/v2/contract/1/0xd6D8555E131c0C431601aF62141A61a9b1aa6b13" },
+    { "label": "WHITEPAPER", "url": "https://tqxcpqc4alqy3gzsf5nn6uvwfye323jo6iis5plmpgtukai33g5q.arweave.net/nC4nwFwC4Y2bMi9a31K2Lgm9bS7yES69bHmnRQEb2bs" }
+  ]
+}

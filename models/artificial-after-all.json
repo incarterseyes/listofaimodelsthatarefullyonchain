@@ -1,0 +1,33 @@
+{
+  "slug": "artificial-after-all",
+  "title": "ARTIFICIAL AFTER ALL",
+  "author": "Han Saglam",
+  "year": 2026,
+  "address": "0xbDF5A7F5e5AE18eE580139297C63a89fc1d18B5f",
+  "mode": "EVM_INFERENCE",
+  "facts": [
+    ["ARCHITECTURE", "compressed decoder NN"],
+    ["PIPELINE", "32-dim latent → dense → 3× transposed conv → 1×1 conv"],
+    ["WEIGHTS", "int8-quantized, Huffman-compressed, in bytecode"],
+    ["OUTPUT", "32×32 grayscale, 1024 bytes"],
+    ["CONTRACTS", "256 sovereign pieces via factory"],
+    ["DEPENDENCIES", "none"]
+  ],
+  "description": "Two hundred fifty-six sovereign contracts, each carrying its own seed and a compressed neural network embedded in Ethereum bytecode. A call to artificial() expands the seed into a 32-dimensional latent and runs the whole forward pass — dense layer, three transposed-convolution blocks, a 1×1 convolution head — in fixed-point EVM arithmetic, returning the 1024 pixels of a 32×32 grayscale image. Nothing fetched from IPFS, nothing served: the work is computed at call time rather than stored. The address here is one example piece; the factory at 0xa7a3022249415e25752C4cF8696c2418DEfdF2Db deployed all 256 and exposes isArtificial(address).",
+  "call": {
+    "calldata": "0xcb95aabc",
+    "expectedReturnBytes": 1088,
+    "note": "artificial() — returns an ABI-encoded 1024-byte 32×32 pixel buffer (1088 raw bytes)"
+  },
+  "preview": {
+    "kind": "grayscale-image",
+    "width": 32,
+    "height": 32
+  },
+  "links": [
+    { "label": "SITE", "url": "https://artificial.han.io" },
+    { "label": "FACTORY", "url": "https://etherscan.io/address/0xa7a3022249415e25752C4cF8696c2418DEfdF2Db" },
+    { "label": "PIECE", "url": "https://etherscan.io/address/0xbDF5A7F5e5AE18eE580139297C63a89fc1d18B5f" },
+    { "label": "INDEXER", "url": "https://indexer.artificial.han.io/pieces" }
+  ]
+}

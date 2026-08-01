@@ -1,0 +1,33 @@
+{
+  "slug": "automate-attention",
+  "title": "AUTOMATE ATTENTION",
+  "author": "diid",
+  "year": 2026,
+  "address": "0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3",
+  "mode": "EVM_INFERENCE",
+  "facts": [
+    ["ARCHITECTURE", "5-layer Llama-style transformer"],
+    ["DIMENSIONS", "dim 48, hidden 128, 8 heads, grouped-query attention"],
+    ["VOCABULARY", "2048 BPE tokens"],
+    ["WEIGHTS", "INT8 per-channel quantized, stored in onchain data contracts"],
+    ["INFERENCE", "RoPE, RMSNorm, SiLU, KV cache — all in EVM opcodes"],
+    ["OUTPUT", "one aphorism per NFT, rendered as onchain SVG"]
+  ],
+  "description": "A complete transformer language model running in EVM opcodes: OnChainLMv2 executes RMSNorm, rotary position embeddings, grouped-query attention, and SiLU feed-forward layers in fixed-point assembly, with INT8 per-channel quantized weights stored across onchain data contracts. The Automate Attention ERC-721 (0x12fd3dB5Ae10615873a4eadbE4085d0698965139) calls it at tokenURI time: a renderer feeds a market-condition prompt through precomputed KV caches and the model generates each token's permanent aphorism, decoded and drawn into an SVG entirely inside a static call. The address here is the language model itself; logits() runs one full forward pass and returns the raw distribution over all 2048 vocabulary entries.",
+  "call": {
+    "calldata": "0xdf6ef8a2000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
+    "expectedReturnBytes": 65600,
+    "note": "logits([1]) — runs a full transformer forward pass and returns int16 logits for all 2048 vocabulary tokens"
+  },
+  "preview": {
+    "kind": "logits",
+    "topK": 5,
+    "note": "Highest-scoring next-token predictions. Mapping token IDs to text requires the project's offchain BPE vocabulary."
+  },
+  "links": [
+    { "label": "SITE", "url": "https://attention.diid.art" },
+    { "label": "MODEL", "url": "https://etherscan.io/address/0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3" },
+    { "label": "NFT", "url": "https://etherscan.io/address/0x12fd3dB5Ae10615873a4eadbE4085d0698965139" },
+    { "label": "SOURCIFY", "url": "https://sourcify.dev/server/v2/contract/1/0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3" }
+  ]
+}
