@@ -4,7 +4,6 @@
   "author": "Han × 1001",
   "year": 2026,
   "address": "0x6901afceb66564a9b6E7193561fB78F0878b5906",
-  "mode": "EVM_INFERENCE",
   "facts": [
     ["ARCHITECTURE", "single-layer perceptron"],
     ["FEATURES", "1024 hashed text n-grams"],
@@ -14,11 +13,11 @@
     ["INITIAL STATE", "all weights zero"],
     ["OUTPUT", "class label with margin-based confidence"]
   ],
-  "description": "A perceptron that lives, learns, and answers entirely inside one contract. Input text (up to 64 bytes) is hashed into a 1024-bit feature vector of unigrams, bigrams, and trigrams; ask() sums the int32 weights at the set bits and returns a class label with a margin-based confidence. The weights started at zero — everything the model knows, someone taught it: anyone can deploy a yes/no question for a fee, the crowd answers, and each settlement runs the perceptron learning rule in contract code. Weights, training, and inference are all onchain; nothing runs anywhere else.",
+  "description": "This perceptron lives inside one contract. The contract stores the weights, trains them, and answers questions. You send it a short text (up to 64 bytes). ask() returns a yes/no label and a confidence value. All weights started at zero. Anyone can post a yes/no question for a fee. Each settled question updates the weights inside the contract.",
   "call": {
     "calldata": "0x189bf94f0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b68656c6c6f20776f726c64000000000000000000000000000000000000000000",
     "expectedReturnBytes": 64,
-    "note": "ask(\"hello world\") — runs the forward pass and returns (label uint8, confidence int256)"
+    "note": "ask(\"hello world\") — runs the model on the text and returns (label uint8, confidence int256)"
   },
   "preview": {
     "kind": "fields",

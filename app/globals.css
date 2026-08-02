@@ -229,12 +229,6 @@ table.simple tbody th{color:var(--theme-text)}
 .action:disabled{cursor:not-allowed;color:var(--ansi-240-gray-35)}
 .action:disabled .action-marker{background:var(--ansi-240-gray-35);color:var(--theme-background)}
 .result-toggle{min-height:24px;padding:0;color:inherit;vertical-align:baseline}
-.mode-label{
-  display:inline-flex;
-  align-items:center;
-  min-height:44px;
-  color:var(--ansi-248-gray-66);
-}
 
 /* ── Call output ────────────────────────────── */
 
@@ -243,10 +237,6 @@ table.simple tbody th{color:var(--theme-text)}
 .out-fail{color:var(--ansi-248-gray-66)}
 .raw-result{color:var(--ansi-10-lime)}
 .rpc-observations{padding-left:2ch}
-
-.legend{color:var(--ansi-248-gray-66);max-width:none}
-.status-key{color:var(--ansi-248-gray-66)}
-.status-key-active{color:var(--ansi-10-lime);font-weight:700}
 
 @media (max-width:700px){
   body{padding:1ch 1ch 10ch}

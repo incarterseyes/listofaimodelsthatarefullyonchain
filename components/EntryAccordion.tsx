@@ -40,7 +40,6 @@ export function EntryAccordion({ entry }: { entry: ModelEntry }) {
               target={{
                 slug: entry.slug,
                 address: entry.address,
-                mode: entry.mode,
                 call: entry.call,
                 preview: entry.preview,
               }}

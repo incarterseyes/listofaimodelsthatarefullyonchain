@@ -4,21 +4,20 @@
   "author": "nahiko",
   "year": 2021,
   "address": "0x2A648cb23D3ADf1BB171Fabc0119eA3eb951841f",
-  "mode": "EVM_INFERENCE",
   "facts": [
     ["ARCHITECTURE", "2-2-1 MLP"],
     ["NEURONS", "3"],
     ["TASK", "XOR"],
-    ["WEIGHTS", "hardcoded in contract storage"],
+    ["WEIGHTS", "fixed in contract storage"],
     ["ACTIVATION", "integer sigmoid approximation"],
     ["INPUTS", "two onchain booleans"],
     ["OUTPUT", "the XOR result as one boolean"]
   ],
-  "description": "Three neurons across two layers holding the XOR rule, minted August 2021 as a single-token ERC-721. The artist and the collector each drive one input sphere by writing a boolean to storage, and the contract resolves the two inputs through the network into yin, yang, or their blend. The weights sit in the contract as fixed variables anyone can read; the activation is an integer approximation of a sigmoid built on Babylonian square roots. The forward pass runs entirely in EVM opcodes: isYingYang() computes the network's output inside a static call.",
+  "description": "Three neurons in two layers compute XOR. The artist minted this work in August 2021 as a one-token NFT. The artist and the collector each set one input. The network turns the two inputs into yin, yang, or a blend. The weights are fixed values in the contract; anyone can read them. isYingYang() runs the model fully inside Ethereum.",
   "call": {
     "calldata": "0xffcc9883",
     "expectedReturnBytes": 32,
-    "note": "isYingYang() — runs the forward pass over the two stored inputs and returns the XOR output as a bool"
+    "note": "isYingYang() — runs the model on the two stored inputs and returns the XOR output as a bool"
   },
   "preview": {
     "kind": "fields",

@@ -24,7 +24,6 @@ export default function Page() {
       {model.title}
     </a>,
     model.author,
-    model.mode.replaceAll("_", " "),
     String(model.year),
   ]);
 
@@ -40,15 +39,14 @@ export default function Page() {
 
       <main id="content">
         <p className="text">
-          Neural-network programs whose weights and executable model artifacts
-          are stored on Ethereum mainnet. Every entry includes a contract
-          address and a reproducible read-only call you can run from this page.
+          This site lists neural networks whose weights and programs are stored
+          fully on Ethereum mainnet. Each entry has a contract address and a
+          live check that you can run from this page.
         </p>
         <p className="text dim">
-          EVM INFERENCE means the forward pass executes in EVM opcodes. ONCHAIN
-          RENDERER means the weights and renderer program are stored onchain but
-          execute in the client. Proofs of off-chain inference and off-chain
-          storage pointers do not qualify.
+          Models that store their files somewhere else, or run somewhere else
+          and only post a proof, do not qualify. Each entry says where the
+          model runs — inside Ethereum, or in your browser.
         </p>
 
         <Divider heavy />
@@ -57,21 +55,14 @@ export default function Page() {
           <Card title="CENSUS">
             <SimpleTable
               caption="Registered onchain models"
-              header={["MODEL", "AUTHOR", "MODE", "YEAR"]}
+              header={["MODEL", "AUTHOR", "YEAR"]}
               rows={census}
               firstColumnHeader
             />
-            <p className="text legend">
-              <span className="status-key-active">EVM INFERENCE</span>{" "}
-              forward
-              pass in EVM opcodes &nbsp;·&nbsp;{" "}
-              <span className="status-key">ONCHAIN RENDERER</span> artifacts
-              stored onchain, execution in the client
-            </p>
             <p className="text">
-              {models.length} registered {models.length === 1 ? "entry" : "entries"}.
-              Each passed deterministic registry checks; select an entry to run
-              a fresh live check.
+              {models.length} {models.length === 1 ? "entry" : "entries"}. Each
+              entry passed the automatic registry checks. Select an entry to
+              run a new live check.
             </p>
           </Card>
         </div>
@@ -89,15 +80,13 @@ export default function Page() {
 
         <Card title="METHOD">
           <p className="text dim">
-            Deterministic validation checks the schema, file identity,
-            evidence links, and declared return size. CI then requires
-            at least two public RPCs to agree, at one block, on the deployed
-            bytecode and the exact eth_call result. Those checks make each call
-            reproducible; they do not, by
-            themselves, prove that arbitrary bytes implement the described
-            neural architecture. Source evidence still receives human review.
-            Corrections and additions are made through an{" "}
-            <a href={REPO}>open pull request</a>.
+            Software checks the schema, file name, evidence links, and declared
+            return size of each entry. Two or more public Ethereum servers must
+            then agree on the contract code and the exact call result at one
+            block. These checks prove that the call is reproducible. They do
+            not prove that the code is the described neural network. A person
+            also reviews the source evidence. To correct or add an entry, open
+            a <a href={REPO}>pull request</a>.
           </p>
         </Card>
       </main>

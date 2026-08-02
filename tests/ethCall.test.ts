@@ -6,7 +6,6 @@ import type { CallTarget } from "@/lib/types";
 const target: CallTarget = {
   slug: "test-model",
   address: "0x0000000000000000000000000000000000000001",
-  mode: "EVM_INFERENCE",
   call: {
     calldata: "0x1234",
     expectedReturnBytes: 1,
@@ -173,7 +172,7 @@ test("a semantic failure and a success are reported as disagreement", async (con
   assert.deepEqual(
     result.status === "disagreement"
       ? result.observations.map((value) =>
-          value.includes("reported no deployed bytecode") ? "no-code" : "returned",
+          value.includes("reported no contract code") ? "no-code" : "returned",
         )
       : [],
     ["no-code", ...endpointUrls.slice(1).map(() => "returned")],
@@ -329,28 +328,28 @@ test("every outcome maps to stable user-facing copy", () => {
     {
       ok: true,
       message:
-        "passed: 3 RPC endpoints agreed at block 256 that deployed code exists and eth_call returns the expected 1 bytes.",
+        "passed: 3 public Ethereum servers agreed at block 256 that the contract code exists and the call returns the expected 1 bytes.",
     },
   );
   assert.deepEqual(describeResult({ status: "empty" }), {
     ok: false,
-    message: "failed: eth_call returned no bytes.",
+    message: "failed: the call returned no bytes.",
   });
   assert.deepEqual(
     describeResult({ status: "mismatch", actualBytes: 2, expectedBytes: 1 }),
-    { ok: false, message: "failed: returned 2 bytes; expected 1." },
+    { ok: false, message: "failed: the call returned 2 bytes; the entry expects 1." },
   );
   assert.deepEqual(describeResult({ status: "no-code" }), {
     ok: false,
-    message: "failed: the address has no deployed bytecode.",
+    message: "failed: no contract code exists at this address.",
   });
   assert.deepEqual(describeResult({ status: "reverted", reason: "nope" }), {
     ok: false,
-    message: "reverted: nope",
+    message: "failed: the contract rejected the call: nope",
   });
   assert.deepEqual(describeResult({ status: "disagreement", observations }), {
     ok: false,
-    message: "failed: configured RPC endpoints returned conflicting results.",
+    message: "failed: the public Ethereum servers returned different results.",
     details: observations,
   });
   assert.deepEqual(
@@ -362,7 +361,7 @@ test("every outcome maps to stable user-facing copy", () => {
     {
       ok: false,
       message:
-        "inconclusive: fewer than two RPC endpoints completed the same verification.",
+        "not confirmed: fewer than two public Ethereum servers completed the same check.",
       details: observations,
     },
   );

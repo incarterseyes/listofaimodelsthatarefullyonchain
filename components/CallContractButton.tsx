@@ -36,7 +36,7 @@ export function CallContractButton({ target }: { target: CallTarget }) {
   }
 
   let line: React.ReactNode =
-    "Checks deployed code, then runs eth_call through configured public RPCs.";
+    "The check reads the contract code and runs the call on public Ethereum servers.";
   let className = "text out";
   let returnedResult: Extract<CallResult, { status: "returned" }> | null = null;
   let observations: string[] | null = null;
@@ -115,7 +115,7 @@ export function CallContractButton({ target }: { target: CallTarget }) {
       )}
       <p className="text dim">{target.call.note}</p>
       <p className="text dim rpc-notice">
-        The requests go from your browser to third-party public RPC endpoints.
+        Requests go from your browser to public third-party Ethereum servers.
       </p>
       <div className="row-between">
         <button
@@ -130,7 +130,6 @@ export function CallContractButton({ target }: { target: CallTarget }) {
           </span>
           <span className="action-label">RUN CHECK</span>
         </button>
-        <span className="mode-label">{target.mode.replaceAll("_", " ")}</span>
       </div>
     </>
   );

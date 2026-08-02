@@ -294,9 +294,9 @@ function summarizeOutcome(result: VerifiedResult): string {
     case "mismatch":
       return `returned ${result.actualBytes} bytes; expected ${result.expectedBytes}`;
     case "no-code":
-      return "reported no deployed bytecode";
+      return "reported no contract code";
     case "reverted":
-      return `reverted: ${result.reason}`;
+      return `rejected the call: ${result.reason}`;
   }
 }
 
@@ -425,33 +425,36 @@ export function describeResult(result: CallResult): CallDescription {
     case "returned":
       return {
         ok: true,
-        message: `passed: ${result.providers} RPC endpoints agreed at block ${BigInt(result.blockNumber)} that deployed code exists and eth_call returns the expected ${result.byteLength} bytes.`,
+        message: `passed: ${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} that the contract code exists and the call returns the expected ${result.byteLength} bytes.`,
       };
     case "empty":
-      return { ok: false, message: "failed: eth_call returned no bytes." };
+      return { ok: false, message: "failed: the call returned no bytes." };
     case "mismatch":
       return {
         ok: false,
-        message: `failed: returned ${result.actualBytes} bytes; expected ${result.expectedBytes}.`,
+        message: `failed: the call returned ${result.actualBytes} bytes; the entry expects ${result.expectedBytes}.`,
       };
     case "no-code":
       return {
         ok: false,
-        message: "failed: the address has no deployed bytecode.",
+        message: "failed: no contract code exists at this address.",
       };
     case "reverted":
-      return { ok: false, message: `reverted: ${result.reason}` };
+      return {
+        ok: false,
+        message: `failed: the contract rejected the call: ${result.reason}`,
+      };
     case "disagreement":
       return {
         ok: false,
-        message: "failed: configured RPC endpoints returned conflicting results.",
+        message: "failed: the public Ethereum servers returned different results.",
         details: result.observations,
       };
     case "unconfirmed":
       return {
         ok: false,
         message:
-          "inconclusive: fewer than two RPC endpoints completed the same verification.",
+          "not confirmed: fewer than two public Ethereum servers completed the same check.",
         details: result.observations,
       };
     case "unreachable":
