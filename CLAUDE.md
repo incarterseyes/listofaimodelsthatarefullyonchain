@@ -8,11 +8,9 @@ Ethereum mainnet. Every entry names a deployed contract and a read-only
 `eth_call` that anyone — the site, CI, or a visitor's browser — can replay to
 check the claim.
 
-Two qualification modes:
-
-- `EVM_INFERENCE` — the forward pass executes in EVM opcodes.
-- `ONCHAIN_RENDERER` — weights + renderer program are stored onchain, executed
-  client-side.
+One qualification rule: both the weights and the inference/renderer program
+are stored on Ethereum mainnet. The model can execute in EVM opcodes or
+client-side; each entry's description states which.
 
 Editorial rules (deliberate, don't relitigate them in PRs): neural networks
 only — statistical models such as Markov chains were reviewed and excluded;
@@ -57,3 +55,8 @@ pointers are not onchain storage. Full contributor rules: CONTRIBUTING.md.
 - Byte-agreement across RPCs proves a reproducible call, not that the bytes
   implement the described architecture — keep site/README copy honest about
   this distinction.
+- When writing or reviewing a model entry (new contributions and PRs), run the
+  `simplified-technical-english-asd-ste100` skill (bundled in `.claude/skills/`)
+  on the entry's `description`, `call.note`, and `preview.note`. Site copy
+  follows the same plain-language rules; see "Description style" in
+  CONTRIBUTING.md.

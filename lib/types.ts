@@ -1,5 +1,3 @@
-export type Mode = "EVM_INFERENCE" | "ONCHAIN_RENDERER";
-
 export type PreviewFieldType = "bool" | "uint8" | "uint256" | "int256";
 
 // Declares how to decode the call's verified return bytes into a
@@ -22,7 +20,6 @@ export interface ModelEntry {
   author: string;
   year: number;
   address: `0x${string}`;
-  mode: Mode;
   facts: [string, string][];
   description: string;
   call: {
@@ -36,5 +33,5 @@ export interface ModelEntry {
 
 export type CallTarget = Pick<
   ModelEntry,
-  "slug" | "address" | "mode" | "call" | "preview"
+  "slug" | "address" | "call" | "preview"
 >;

@@ -5,12 +5,9 @@ One model = one JSON file in `models/`. Open a pull request that adds yours.
 ## What qualifies
 
 A **neural network** whose weights and executable model program are stored on
-Ethereum mainnet, in one of two modes:
-
-- `EVM_INFERENCE` — the forward pass executes in EVM opcodes. A static
-  `eth_call` returns the model output.
-- `ONCHAIN_RENDERER` — the weights and renderer program are stored onchain, then
-  fetched and executed client-side.
+Ethereum mainnet. The model can run inside the EVM (a read-only `eth_call`
+returns the model output) or in the client (the renderer program is fetched
+from the chain and run in the browser). The description must state which.
 
 What does **not** qualify:
 
@@ -38,6 +35,23 @@ What does **not** qualify:
 8. Open the pull request. State plainly where the weights live and where
    execution runs.
 
+## Description style
+
+Write the description for the general public:
+
+- 50-60 words. The schema rejects more than 700 characters.
+- Short sentences, 25 words or fewer. One idea per sentence. Active voice.
+- Say where the weights live and where the model runs.
+- Put technical detail (layer shapes, quantization, encodings) in `facts`
+  and `call.note`, not in the description.
+- Use plain words: "public Ethereum servers", "runs inside Ethereum". Exact
+  function signatures belong in `call.note`.
+
+This repo ships a Claude Code skill that checks prose against these rules:
+`.claude/skills/simplified-technical-english-asd-ste100`. If you write your
+entry with an AI agent, run the skill on your `description`, `call.note`, and
+`preview.note` before you open the PR.
+
 ## Facts
 
 `facts` is a list of `["LABEL", "value"]` pairs rendered as the entry's table.
@@ -60,8 +74,8 @@ covers.
 `PARAMETERS`, `NEURONS`, `FEATURES`, `VOCABULARY`, `ACTIVATION`, `INPUTS`,
 `MATH`, `INITIAL STATE`, `CONTRACTS`, `DEPENDENCIES`
 
-Do not add `ADDRESS`, `MODE`, or `YEAR` facts — the site renders those rows
-from the top-level fields.
+Do not add `ADDRESS` or `YEAR` facts — the site renders those rows from the
+top-level fields.
 
 ## Output preview (optional, encouraged)
 

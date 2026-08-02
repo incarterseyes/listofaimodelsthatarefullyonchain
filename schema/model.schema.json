@@ -4,7 +4,7 @@
   "title": "Onchain Model Register entry",
   "description": "One fully-onchain neural network. The model's weights AND its inference/renderer code must live on Ethereum mainnet. The file name must be <slug>.json.",
   "type": "object",
-  "required": ["slug", "title", "author", "year", "address", "mode", "facts", "description", "call", "links"],
+  "required": ["slug", "title", "author", "year", "address", "facts", "description", "call", "links"],
   "additionalProperties": false,
   "properties": {
     "slug": {
@@ -18,12 +18,7 @@
     "address": {
       "type": "string",
       "pattern": "^0x[0-9a-fA-F]{40}$",
-      "description": "The contract holding the weights (and inference code for EVM_INFERENCE entries)."
-    },
-    "mode": {
-      "type": "string",
-      "enum": ["EVM_INFERENCE", "ONCHAIN_RENDERER"],
-      "description": "EVM_INFERENCE: the forward pass executes in EVM opcodes. ONCHAIN_RENDERER: weights + renderer code are stored onchain, computed client-side."
+      "description": "The contract holding the weights (and the inference code, if the model runs inside the EVM)."
     },
     "facts": {
       "type": "array",
@@ -42,7 +37,7 @@
       },
       "description": "LABEL/VALUE pairs rendered as a table. Labels come from the closed vocabulary in lib/models.ts (see CONTRIBUTING.md); ARCHITECTURE, WEIGHTS, and OUTPUT are required, e.g. [\"ARCHITECTURE\", \"2-2-1 MLP\"]."
     },
-    "description": { "type": "string", "minLength": 1, "maxLength": 1200, "pattern": "\\S" },
+    "description": { "type": "string", "minLength": 1, "maxLength": 700, "pattern": "\\S" },
     "call": {
       "type": "object",
       "required": ["calldata", "expectedReturnBytes", "note"],
@@ -59,7 +54,7 @@
           "maximum": 10000000,
           "description": "Exact byte length of the raw JSON-RPC result, including ABI framing."
         },
-        "note": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S", "description": "What the call computes, e.g. \"isYingYang() — runs the forward pass\"." }
+        "note": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S", "description": "What the call computes, e.g. \"isYingYang() — runs the model\"." }
       }
     },
     "links": {

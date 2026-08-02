@@ -16,13 +16,12 @@ evidence of a reproducible onchain execution path; it is not, on its own, proof
 that arbitrary bytes implement the architecture described by an entry. The
 linked source and project evidence still require human review.
 
-## Qualification modes
+## What qualifies
 
-- `EVM_INFERENCE` — the forward pass executes in EVM opcodes.
-- `ONCHAIN_RENDERER` — the weights and renderer program are stored onchain, but
-  execute in the client.
-
-Proofs of off-chain inference and off-chain storage pointers do not qualify.
+A neural network qualifies only if both its weights and its executable model
+program are stored on Ethereum mainnet. The model can execute in EVM opcodes
+or in the client; each entry's description states which. Proofs of off-chain
+inference and off-chain storage pointers do not qualify.
 
 ## Add a model
 
