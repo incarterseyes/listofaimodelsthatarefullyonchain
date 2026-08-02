@@ -1,0 +1,30 @@
+{
+  "slug": "i-by-ryley-o",
+  "title": "I.",
+  "author": "ryley-o.eth",
+  "year": 2025,
+  "address": "0x000000A35301Fa5784E820F489003FfcfFdc69a6",
+  "facts": [
+    ["ARCHITECTURE", "conditional VAE-GAN generator (cVAE-GAN)"],
+    ["TASK", "generate eyes that express human emotion"],
+    ["DIMENSIONS", "16-dim input (1 latent + 15 condition) → 64×64 RGB"],
+    ["PARAMETERS", "297,859, quantized to uint8 with per-tensor min/scale"],
+    ["WEIGHTS", "gzip shards inside the onchain program — 24 locked data contracts, 422,292 bytes total"],
+    ["RENDERER", "vanilla JS with embedded pako — no TensorFlow.js, no CDN, no fetch at render time"],
+    ["INFERENCE", "client-side — the browser runs the program read from Ethereum"],
+    ["OUTPUT", "one 64×64 RGB eye image per token, drawn in the browser"],
+    ["CONTRACTS", "Art Blocks Studio 56 core (ERC-721) points to the script chunks"]
+  ],
+  "description": "I. draws 64×64 eyes with human expressions. A small cVAE-GAN generates each image. The full program — inference code and compressed weights — lives in 24 data contracts on Ethereum, locked forever. Your browser reads the program from Ethereum and runs it. No server and no outside library is needed.",
+  "call": {
+    "calldata": "0x8c3c9cdd00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005",
+    "expectedReturnBytes": 9952,
+    "note": "projectScriptByIndex(0, 5) — reads part 5 of 24 of the onchain program; parts 5–18 are the model weights (base64 text)"
+  },
+  "links": [
+    { "label": "ETHERSCAN", "url": "https://etherscan.io/address/0x000000a35301fa5784e820f489003ffcffdc69a6" },
+    { "label": "COLLECTION", "url": "https://www.artblocks.io/collection/i.-by-ryley-o.eth" },
+    { "label": "ARTIST", "url": "https://ryley-o.com/i/" },
+    { "label": "TRAINING CODE", "url": "https://github.com/ryley-o/I_cVAEGAN" }
+  ]
+}
