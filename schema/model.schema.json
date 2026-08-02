@@ -131,6 +131,26 @@
             "note": { "$ref": "#/$defs/previewNote" }
           },
           "description": "Fallback: lists each 32-byte word of the return data."
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "svg" },
+            "note": { "$ref": "#/$defs/previewNote" }
+          },
+          "description": "ABI-encoded string containing an SVG document; rendered as an image."
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "token-uri" },
+            "note": { "$ref": "#/$defs/previewNote" }
+          },
+          "description": "ABI-encoded string containing base64 ERC-721 JSON metadata with a self-contained data: image; rendered as an image."
         }
       ]
     }

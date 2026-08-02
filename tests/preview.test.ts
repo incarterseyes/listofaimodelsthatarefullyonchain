@@ -83,6 +83,54 @@ test("logits surface the top-k tokens in score order", () => {
   assert.equal(decodePreview({ kind: "logits", topK: 3 }, truncated), null);
 });
 
+function abiStringHex(text: string): string {
+  const utf8 = Buffer.from(text, "utf8");
+  const padded = Buffer.concat([
+    utf8,
+    Buffer.alloc((32 - (utf8.length % 32)) % 32),
+  ]);
+  return `0x${word(32n)}${word(BigInt(utf8.length))}${padded.toString("hex")}`;
+}
+
+test("svg previews decode ABI strings into data URIs", () => {
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
+  const decoded = decodePreview({ kind: "svg" }, abiStringHex(svg));
+
+  assert.equal(decoded?.kind, "figure");
+  assert.equal(
+    decoded?.kind === "figure" ? decoded.src : "",
+    `data:image/svg+xml;base64,${Buffer.from(svg, "utf8").toString("base64")}`,
+  );
+
+  assert.equal(decodePreview({ kind: "svg" }, abiStringHex("not svg")), null);
+});
+
+test("token-uri previews extract self-contained data images only", () => {
+  const gif = "data:image/gif;base64,R0lGODlh";
+  const uri = (image: string) =>
+    `data:application/json;base64,${Buffer.from(
+      JSON.stringify({ name: "GANPepe #1", image }),
+      "utf8",
+    ).toString("base64")}`;
+
+  const decoded = decodePreview({ kind: "token-uri" }, abiStringHex(uri(gif)));
+  assert.deepEqual(decoded, {
+    kind: "figure",
+    heading: "ONCHAIN TOKEN METADATA",
+    src: gif,
+    caption: "GANPepe #1",
+  });
+
+  // An https image would be offchain content — must never render.
+  assert.equal(
+    decodePreview(
+      { kind: "token-uri" },
+      abiStringHex(uri("https://example.com/x.gif")),
+    ),
+    null,
+  );
+});
+
 test("words fall back to one row per 32-byte word", () => {
   const decoded = decodePreview({ kind: "words" }, `0x${word(0n)}${word(255n)}`);
 

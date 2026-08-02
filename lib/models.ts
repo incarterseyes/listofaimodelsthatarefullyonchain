@@ -84,8 +84,9 @@ function semanticProblems(entry: ModelEntry, currentYear: number): string[] {
         );
       }
     } else if (expected % 32 !== 0) {
+      // words, svg, and token-uri all decode 32-byte-word-aligned ABI data.
       problems.push(
-        `words preview requires a multiple of 32 return bytes but expectedReturnBytes is ${expected}`,
+        `${preview.kind} preview requires a multiple of 32 return bytes but expectedReturnBytes is ${expected}`,
       );
     }
   }
