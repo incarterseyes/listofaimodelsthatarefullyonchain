@@ -47,6 +47,11 @@ Write the description for the general public:
 - Use plain words: "public Ethereum servers", "runs inside Ethereum". Exact
   function signatures belong in `call.note`.
 
+This repo ships a Claude Code skill that checks prose against these rules:
+`.claude/skills/simplified-technical-english-asd-ste100`. If you write your
+entry with an AI agent, run the skill on your `description`, `call.note`, and
+`preview.note` before you open the PR.
+
 ## Facts
 
 `facts` is a list of `["LABEL", "value"]` pairs rendered as the entry's table.

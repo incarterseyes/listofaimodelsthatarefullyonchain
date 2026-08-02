@@ -55,3 +55,8 @@ pointers are not onchain storage. Full contributor rules: CONTRIBUTING.md.
 - Byte-agreement across RPCs proves a reproducible call, not that the bytes
   implement the described architecture — keep site/README copy honest about
   this distinction.
+- When writing or reviewing a model entry (new contributions and PRs), run the
+  `simplified-technical-english-asd-ste100` skill (bundled in `.claude/skills/`)
+  on the entry's `description`, `call.note`, and `preview.note`. Site copy
+  follows the same plain-language rules; see "Description style" in
+  CONTRIBUTING.md.
