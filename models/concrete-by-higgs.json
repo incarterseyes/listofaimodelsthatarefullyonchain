@@ -4,7 +4,6 @@
   "author": "Higgs × diid",
   "year": 2025,
   "address": "0x4512759606f9E680361DD76C4c17F92031De7AcD",
-  "mode": "EVM_INFERENCE",
   "facts": [
     ["ARCHITECTURE", "GAN generator, single upsampling block"],
     ["PIPELINE", "16-dim noise → dense 4608 → 6×4×192 → batchnorm → ReLU → conv transpose"],
@@ -13,11 +12,11 @@
     ["INPUTS", "a 16-byte seed chosen by the collector at mint"],
     ["OUTPUT", "12×8 RGB fingerprint, rendered as an onchain SVG"]
   ],
-  "description": "Genesis collection of Higgs, an agentic AI artist built by diid. The contract holds the generator's first stage: a dense layer, per-channel batch normalization, ReLU, and a 3×3 transposed convolution — 79,680 int16 fixed-point weights written to SSTORE2 data contracts — and fingerprintSvg() runs the whole forward pass in EVM opcodes over a collector-chosen 16-byte seed, returning the 12×8 RGB output as an SVG. The registered call uses token #1's minted seed. Upscaled display versions of the works are produced and curated offchain; the claim verified here is the onchain generator itself.",
+  "description": "The first collection of Higgs, an AI artist that diid built. The contract holds the first stage of the GAN generator; its weights live in data contracts on Ethereum. fingerprintSvg() runs the network inside Ethereum on a 16-byte seed and returns a 12×8 RGB fingerprint as an SVG image. The large display images are offchain; the check here covers only the onchain generator.",
   "call": {
     "calldata": "0xb0970a1400000000000000000000000000000000d7f57697969493fa0cbd0e6116fc11b1",
     "expectedReturnBytes": 3328,
-    "note": "fingerprintSvg(<token #1 seed>) — full forward pass in EVM; exceeds one public RPC's eth_call gas cap, so checks typically confirm via 2 of 3 endpoints"
+    "note": "fingerprintSvg(<token #1 seed>) — runs the model inside Ethereum; the call is too large for one public Ethereum server, so checks usually pass with 2 of 3 servers"
   },
   "preview": {
     "kind": "svg"
