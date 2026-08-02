@@ -1,0 +1,29 @@
+{
+  "slug": "aragnation",
+  "title": "ARAGNATION",
+  "author": "Devi Parikh and Abhishek Das",
+  "year": 2023,
+  "address": "0x99a9B7c1116f9ceEB1652de04d5969CcE509B069",
+  "facts": [
+    ["ARCHITECTURE", "coordinate MLP (CPPN) — 5-32-32-32-32-32-32-3, ReLU"],
+    ["TASK", "color abstract compositions; the net predicts the color at each (x, y)"],
+    ["PARAMETERS", "5,571 — 5,376 weights + 195 biases, 3-decimal fixed point stored ×1000"],
+    ["WEIGHTS", "literal number arrays in the project script — 7 locked chunks on the Art Blocks core"],
+    ["INPUTS", "(y, x) position plus a 3-value noise vector per artwork"],
+    ["INFERENCE", "client-side — the browser runs the forward pass from the onchain script"],
+    ["DEPENDENCIES", "p5@1.0.0, itself stored onchain in the Art Blocks dependency registry"],
+    ["OUTPUT", "an RGB color per coordinate; some works use palette coloring instead"]
+  ],
+  "description": "Aragnation draws abstract compositions with a watercolor look. A small neural network learned to map each (x, y) position to a color. Its weights sit as plain numbers inside the project script, in seven locked data chunks on Ethereum. Your browser reads the script from Ethereum and runs it. Some works use palettes instead of the network.",
+  "call": {
+    "calldata": "0x8c3c9cdd00000000000000000000000000000000000000000000000000000000000001910000000000000000000000000000000000000000000000000000000000000003",
+    "expectedReturnBytes": 10304,
+    "note": "projectScriptByIndex(401, 3) — reads part 3 of 7 of the onchain program; this part is entirely model-weight numbers"
+  },
+  "links": [
+    { "label": "ETHERSCAN", "url": "https://etherscan.io/address/0x99a9b7c1116f9ceeb1652de04d5969cce509b069" },
+    { "label": "COLLECTION", "url": "https://www.artblocks.io/collections/presents/projects/0x99a9b7c1116f9ceeb1652de04d5969cce509b069/401" },
+    { "label": "ARTISTS", "url": "https://aragnation.github.io/" },
+    { "label": "DEP REGISTRY", "url": "https://etherscan.io/address/0x37861f95882ACDba2cCD84F5bFc4598e2ECDDdAF" }
+  ]
+}
