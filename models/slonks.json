@@ -1,0 +1,35 @@
+{
+  "slug": "slonks",
+  "title": "SLONKS",
+  "author": "Blockhash",
+  "year": 2026,
+  "address": "0xCa116243a2013ED33015c776ee37310b199Ee80c",
+  "facts": [
+    ["ARCHITECTURE", "candidate-palette classifier — per-pixel 18-way argmax over learned embeddings"],
+    ["TASK", "reconstruct all 10,000 CryptoPunks at 24×24 from 10-byte embeddings"],
+    ["WEIGHTS", "214,048 int8 bytes in 9 SSTORE2 data contracts; locked onchain forever"],
+    ["PARAMETERS", "203,680 learned int8 values (10,000×10 embeddings + 576×18×10 pixel heads)"],
+    ["MATH", "argmax of dot(embedding[token], head[pixel, k]); the winner indexes a candidate color table"],
+    ["TRAINING", "offchain on the CryptoPunks image set; 95.77% pixel accuracy"],
+    ["OUTPUT", "576 palette indexes — a 24×24 reconstruction of the source punk"],
+    ["CONTRACTS", "ERC-721 + swappable renderer + merge manager; the model contract is locked"]
+  ],
+  "description": "Slonks redraws all 10,000 CryptoPunks with a small model that lives on Ethereum. For each pixel, the model scores 18 candidate colors against a learned 10-byte embedding. The best score wins. The weights fill nine data contracts and can never change. The model runs inside Ethereum. The pixels the model gets wrong are the art.",
+  "call": {
+    "calldata": "0x045776c00000000000000000000000000000000000000000000000000000000000000000",
+    "expectedReturnBytes": 640,
+    "note": "renderSourcePixels(0) — runs the model inside Ethereum for punk #0 and returns 576 palette indexes, one per pixel"
+  },
+  "preview": {
+    "kind": "grayscale-image",
+    "width": 24,
+    "height": 24,
+    "note": "Each byte is an index into the 222-color CryptoPunks palette. The preview shows the indexes as gray levels, not the true colors."
+  },
+  "links": [
+    { "label": "ETHERSCAN", "url": "https://etherscan.io/address/0xca116243a2013ed33015c776ee37310b199ee80c" },
+    { "label": "COLLECTION", "url": "https://www.slonks.art/" },
+    { "label": "TECH NOTES", "url": "https://www.slonks.art/about" },
+    { "label": "ERC-721", "url": "https://etherscan.io/address/0x832233ddb7bcffd0ed53127dd6be3f1aa5845108" }
+  ]
+}
