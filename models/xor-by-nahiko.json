@@ -21,7 +21,6 @@
     "fields": [{ "label": "OUTPUT", "type": "bool" }]
   },
   "links": [
-    { "label": "ETHERSCAN", "url": "https://etherscan.io/address/0x2a648cb23d3adf1bb171fabc0119ea3eb951841f" },
-    { "label": "SOURCIFY", "url": "https://sourcify.dev/server/v2/contract/1/0x2A648cb23D3ADf1BB171Fabc0119eA3eb951841f" }
+    { "label": "CONTRACT", "url": "https://evm.now/address/0x2A648cb23D3ADf1BB171Fabc0119eA3eb951841f" }
   ]
 }

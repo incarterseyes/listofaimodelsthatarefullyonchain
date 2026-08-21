@@ -20,7 +20,7 @@
     "kind": "svg"
   },
   "links": [
-    { "label": "ETHERSCAN", "url": "https://etherscan.io/address/0x4512759606f9E680361DD76C4c17F92031De7AcD" },
-    { "label": "COLLECTION", "url": "https://verse.works/artworks/508178a4-eb93-4fa0-8a45-aea7a66c46fa/289" }
+    { "label": "SITE", "url": "https://verse.works/artworks/508178a4-eb93-4fa0-8a45-aea7a66c46fa/289" },
+    { "label": "CONTRACT", "url": "https://evm.now/address/0x4512759606f9E680361DD76C4c17F92031De7AcD" }
   ]
 }

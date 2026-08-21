@@ -23,8 +23,6 @@
   },
   "links": [
     { "label": "SITE", "url": "https://attention.diid.art" },
-    { "label": "MODEL", "url": "https://etherscan.io/address/0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3" },
-    { "label": "NFT", "url": "https://etherscan.io/address/0x12fd3dB5Ae10615873a4eadbE4085d0698965139" },
-    { "label": "SOURCIFY", "url": "https://sourcify.dev/server/v2/contract/1/0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3" }
+    { "label": "CONTRACT", "url": "https://evm.now/address/0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3" }
   ]
 }

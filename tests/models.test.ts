@@ -94,15 +94,44 @@ test("previews must match the declared return size", () => {
   );
 });
 
-test("invalid and duplicate evidence links are rejected", () => {
+test("unknown link labels and duplicate URLs are rejected", () => {
   const entry = copyValid();
   entry.links = [
-    { label: "BROKEN", url: "https://?" },
-    { label: "ONE", url: "https://example.com" },
-    { label: "TWO", url: "https://example.com/" },
+    { label: "GITHUB", url: "https://example.com" },
+    { label: "SITE", url: "https://example.com/a" },
+    { label: "ABOUT", url: "https://example.com/a" },
   ];
   assert.throws(
     () => parseModelEntry(entry, `${entry.slug}.json`),
-    /not a valid URL[\s\S]*duplicated/,
+    /unknown link label "GITHUB"; valid labels are: SITE, ABOUT, CONTRACT[\s\S]*duplicated/,
+  );
+});
+
+test("the CONTRACT link is required and pinned to evm.now", () => {
+  const entry = copyValid();
+  entry.links = [{ label: "SITE", url: "https://example.com" }];
+  assert.throws(
+    () => parseModelEntry(entry, `${entry.slug}.json`),
+    /missing required link "CONTRACT"/,
+  );
+
+  entry.links = [
+    { label: "CONTRACT", url: `https://etherscan.io/address/${entry.address}` },
+  ];
+  assert.throws(
+    () => parseModelEntry(entry, `${entry.slug}.json`),
+    /CONTRACT link must be "https:\/\/evm\.now\/address\//,
+  );
+});
+
+test("links must follow the fixed order", () => {
+  const entry = copyValid();
+  entry.links = [
+    { label: "CONTRACT", url: `https://evm.now/address/${entry.address}` },
+    { label: "SITE", url: "https://example.com" },
+  ];
+  assert.throws(
+    () => parseModelEntry(entry, `${entry.slug}.json`),
+    /links must follow the order SITE, ABOUT, CONTRACT/,
   );
 });

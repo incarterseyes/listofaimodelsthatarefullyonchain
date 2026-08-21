@@ -22,9 +22,7 @@
   },
   "links": [
     { "label": "SITE", "url": "https://felixfelixfelix.com/tmit" },
-    { "label": "INSTRUMENT", "url": "https://etherscan.io/address/0xd6D8555E131c0C431601aF62141A61a9b1aa6b13" },
-    { "label": "RENDERER", "url": "https://etherscan.io/address/0x0BDC00fe1d7924dd5893B092B7ed0e3ABcceCEF5" },
-    { "label": "SOURCIFY", "url": "https://sourcify.dev/server/v2/contract/1/0xd6D8555E131c0C431601aF62141A61a9b1aa6b13" },
-    { "label": "WHITEPAPER", "url": "https://tqxcpqc4alqy3gzsf5nn6uvwfye323jo6iis5plmpgtukai33g5q.arweave.net/nC4nwFwC4Y2bMi9a31K2Lgm9bS7yES69bHmnRQEb2bs" }
+    { "label": "ABOUT", "url": "https://tqxcpqc4alqy3gzsf5nn6uvwfye323jo6iis5plmpgtukai33g5q.arweave.net/nC4nwFwC4Y2bMi9a31K2Lgm9bS7yES69bHmnRQEb2bs" },
+    { "label": "CONTRACT", "url": "https://evm.now/address/0xd6D8555E131c0C431601aF62141A61a9b1aa6b13" }
   ]
 }

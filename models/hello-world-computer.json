@@ -26,7 +26,6 @@
   },
   "links": [
     { "label": "SITE", "url": "https://helloworldcomputer.ai" },
-    { "label": "ETHERSCAN", "url": "https://etherscan.io/address/0x6901afceb66564a9b6e7193561fb78f0878b5906" },
-    { "label": "SOURCIFY", "url": "https://sourcify.dev/server/v2/contract/1/0x6901afceb66564a9b6E7193561fB78F0878b5906" }
+    { "label": "CONTRACT", "url": "https://evm.now/address/0x6901afceb66564a9b6e7193561fb78f0878b5906" }
   ]
 }

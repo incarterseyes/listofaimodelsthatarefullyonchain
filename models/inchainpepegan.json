@@ -21,8 +21,8 @@
     "kind": "token-uri"
   },
   "links": [
-    { "label": "ETHERSCAN", "url": "https://etherscan.io/address/0x65e9a5bbc1b26c0833b232355534cc404b0e69d4" },
-    { "label": "GITHUB", "url": "https://github.com/InChainPepeGAN/InChainPepeGAN" },
-    { "label": "WRITEUP", "url": "https://paragraph.com/@lifeonchain-nft/how-far-can-on-chain-ai-go" }
+    { "label": "SITE", "url": "https://github.com/InChainPepeGAN/InChainPepeGAN" },
+    { "label": "ABOUT", "url": "https://paragraph.com/@lifeonchain-nft/how-far-can-on-chain-ai-go" },
+    { "label": "CONTRACT", "url": "https://evm.now/address/0x65e9A5BbC1B26C0833B232355534cC404b0e69D4" }
   ]
 }

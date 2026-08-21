@@ -33,6 +33,14 @@ const FACT_LABELS = new Set<string>([
   ...OPTIONAL_FACT_LABELS,
 ]);
 
+// Fixed links vocabulary, same idea as facts: every entry offers the same
+// links in the same order. CONTRACT is required and always points at the
+// entry's address on evm.now, so readers land in one explorer everywhere.
+export const LINK_ORDER = ["SITE", "ABOUT", "CONTRACT"] as const;
+export function contractLinkUrl(address: string): string {
+  return `https://evm.now/address/${address}`;
+}
+
 function semanticProblems(entry: ModelEntry, currentYear: number): string[] {
   const problems: string[] = [];
 
@@ -112,7 +120,37 @@ function semanticProblems(entry: ModelEntry, currentYear: number): string[] {
   }
 
   const urls = new Set<string>();
+  const linkLabels = new Set<string>();
+  let lastLinkIndex = -1;
+  let linksOutOfOrder = false;
   for (const link of entry.links) {
+    const label = link.label.trim().toUpperCase();
+    const linkIndex = LINK_ORDER.indexOf(label as (typeof LINK_ORDER)[number]);
+    if (linkIndex === -1) {
+      problems.push(
+        `unknown link label "${link.label}"; valid labels are: ${LINK_ORDER.join(", ")}`,
+      );
+      continue;
+    }
+    if (linkLabels.has(label)) {
+      problems.push(`link label "${link.label}" is duplicated`);
+    }
+    linkLabels.add(label);
+    if (linkIndex < lastLinkIndex && !linksOutOfOrder) {
+      linksOutOfOrder = true;
+      problems.push(`links must follow the order ${LINK_ORDER.join(", ")}`);
+    }
+    lastLinkIndex = Math.max(lastLinkIndex, linkIndex);
+
+    if (
+      label === "CONTRACT" &&
+      link.url.toLowerCase() !== contractLinkUrl(entry.address).toLowerCase()
+    ) {
+      problems.push(
+        `CONTRACT link must be "${contractLinkUrl(entry.address)}" (got "${link.url}")`,
+      );
+    }
+
     try {
       const url = new URL(link.url);
       if (url.protocol !== "https:" || !url.hostname) {
@@ -126,6 +164,9 @@ function semanticProblems(entry: ModelEntry, currentYear: number): string[] {
     } catch {
       problems.push(`link "${link.label}" is not a valid URL`);
     }
+  }
+  if (!linkLabels.has("CONTRACT")) {
+    problems.push(`missing required link "CONTRACT"`);
   }
 
   return problems;

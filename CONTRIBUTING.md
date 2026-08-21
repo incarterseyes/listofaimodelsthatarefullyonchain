@@ -28,8 +28,8 @@ What does **not** qualify:
 5. Set `call.expectedReturnBytes` to the exact raw JSON-RPC result length,
    including ABI framing. A dynamic 1024-byte payload, for example, returns 1088
    raw bytes (offset + length + payload).
-6. Include at least one HTTPS evidence link. Verified source and an explorer
-   deployment link are strongly preferred.
+6. Fill in `links` (see "Links" below). The CONTRACT link to your address on
+   evm.now is required; SITE and ABOUT are optional.
 7. Run `npm run check` and `npm run verify`. Live verification requires two
    public RPCs to agree at one block; deterministic and live failures block CI.
 8. Open the pull request. State plainly where the weights live and where
@@ -82,6 +82,21 @@ questions belongs in the description or `call.note`.
 Do not add `ADDRESS` or `YEAR` facts — the site renders those rows from the
 top-level fields.
 
+## Links
+
+`links` follows the same idea as facts: every entry offers the same links in
+the same order, so validation rejects any other label or order.
+
+| Label | What it points at | Required |
+| --- | --- | --- |
+| `SITE` | The project itself: its site, app, or repository | optional |
+| `ABOUT` | A writeup: an essay, whitepaper, or about page | optional |
+| `CONTRACT` | The entry's address on evm.now, exactly `https://evm.now/address/<address>` | required |
+
+evm.now shows the verified source, lets readers run the read functions, and
+covers what separate explorer and source links used to. One link label of
+each kind, at most three links total.
+
 ## Output preview (optional, encouraged)
 
 Raw return bytes mean little to a first-time visitor. The optional `preview`
@@ -110,5 +125,5 @@ that need an offchain vocabulary to become text).
 - [ ] File name matches `slug`
 - [ ] `npm run check` passes deterministic registry and code checks
 - [ ] `npm run verify` gets matching bytecode and call results from two RPCs
-- [ ] Links to verified source code included
+- [ ] CONTRACT link points at the entry's address on evm.now
 - [ ] Description states plainly where the weights live and where execution runs
