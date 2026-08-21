@@ -5,12 +5,9 @@
   "year": 2021,
   "address": "0x2A648cb23D3ADf1BB171Fabc0119eA3eb951841f",
   "facts": [
-    ["ARCHITECTURE", "2-2-1 MLP"],
-    ["NEURONS", "3"],
-    ["TASK", "XOR"],
-    ["WEIGHTS", "fixed in contract storage"],
-    ["ACTIVATION", "integer sigmoid approximation"],
-    ["INPUTS", "two onchain booleans"],
+    ["TYPE", "two-layer neural network, 2-2-1 (MLP)"],
+    ["SIZE", "3 neurons"],
+    ["STORAGE", "fixed values in contract storage"],
     ["OUTPUT", "the XOR result as one boolean"]
   ],
   "description": "Three neurons in two layers compute XOR. The artist minted this work in August 2021 as a one-token NFT. The artist and the collector each set one input. The network turns the two inputs into yin, yang, or a blend. The weights are fixed values in the contract; anyone can read them. isYingYang() runs the model fully inside Ethereum.",

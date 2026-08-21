@@ -5,13 +5,11 @@
   "year": 2026,
   "address": "0x6901afceb66564a9b6E7193561fB78F0878b5906",
   "facts": [
-    ["ARCHITECTURE", "single-layer perceptron"],
-    ["FEATURES", "1024 hashed text n-grams"],
-    ["WEIGHTS", "int32 × 1024, packed in uint256[128] storage"],
-    ["TRAINING", "onchain — perceptron rule at question settlement"],
-    ["TASK", "binary text classification"],
-    ["INITIAL STATE", "all weights zero"],
-    ["OUTPUT", "class label with margin-based confidence"]
+    ["TYPE", "single-layer perceptron"],
+    ["SIZE", "1,024 weights (hashed text n-grams)"],
+    ["STORAGE", "contract storage; int32 packed in uint256[128]"],
+    ["TRAINING", "learns inside Ethereum — weights start at zero and update when each question settles"],
+    ["OUTPUT", "a yes/no label with a confidence value"]
   ],
   "description": "This perceptron lives inside one contract. The contract stores the weights, trains them, and answers questions. You send it a short text (up to 64 bytes). ask() returns a yes/no label and a confidence value. All weights started at zero. Anyone can post a yes/no question for a fee. Each settled question updates the weights inside the contract.",
   "call": {

@@ -22,7 +22,7 @@ What does **not** qualify:
 1. Copy an existing file in `models/` and fill in your entry. The complete shape
    is documented in `schema/model.schema.json`.
 2. Name the file `<slug>.json`, matching the `slug` field.
-3. Fill in the `facts` table from the closed vocabulary below.
+3. Fill in the `facts` table: answer the reader's questions listed below.
 4. `call.calldata` must be even-length, pre-encoded calldata for the inference or
    renderer-artifact function itself.
 5. Set `call.expectedReturnBytes` to the exact raw JSON-RPC result length,
@@ -54,25 +54,30 @@ entry with an AI agent, run the skill on your `description`, `call.note`, and
 
 ## Facts
 
-`facts` is a list of `["LABEL", "value"]` pairs rendered as the entry's table.
-Labels come from a closed vocabulary so entries stay comparable; an unknown
-label fails validation with the list of valid ones. Extend the vocabulary in
-`lib/models.ts` via PR if your model genuinely needs a label no existing one
-covers.
+`facts` is the entry's table: the questions a first-time reader asks, answered
+in one fixed order. Every entry uses the same labels, so a reader compares
+entries without learning new vocabulary. Validation rejects any other label,
+any other order, and the value shapes noted below.
 
-**Required** (every entry):
+**Required, in this order:**
 
-| Label | What to enter | Example |
+| Label | The reader's question | Example |
 | --- | --- | --- |
-| `ARCHITECTURE` | The network in one phrase | `2-2-1 MLP` |
-| `WEIGHTS` | Where and how the weights are stored | `int32 × 1024, packed in uint256[128] storage` |
-| `OUTPUT` | What the model produces | `the XOR result as one boolean` |
+| `TYPE` | What kind of network is this? | `single-layer perceptron` |
+| `SIZE` | How big is it? The value must contain a number. | `1,024 weights (hashed text n-grams)` |
+| `STORAGE` | Where do the weights live? The value must name one of: `contract storage`, `data contracts`, `bytecode`, `derived at read time`. | `data contracts (SSTORE2); int16 fixed-point` |
+| `OUTPUT` | What does it produce? | `the XOR result as one boolean` |
 
-**Optional** (use what applies):
+**Optional** — one `TRAINING` row, placed between `STORAGE` and `OUTPUT`, for
+when how the model learned is part of the story:
 
-`TASK`, `TRAINING`, `INFERENCE`, `RENDERER`, `PIPELINE`, `DIMENSIONS`,
-`PARAMETERS`, `NEURONS`, `FEATURES`, `VOCABULARY`, `ACTIVATION`, `INPUTS`,
-`MATH`, `INITIAL STATE`, `CONTRACTS`, `DEPENDENCIES`
+| Label | The reader's question | Example |
+| --- | --- | --- |
+| `TRAINING` | How did it learn? | `learns inside Ethereum — weights update when each question settles` |
+
+Value style: plain words first, with the precise technical term in parentheses
+— `data contracts (SSTORE2)`. Detail that does not answer one of these
+questions belongs in the description or `call.note`.
 
 Do not add `ADDRESS` or `YEAR` facts — the site renders those rows from the
 top-level fields.

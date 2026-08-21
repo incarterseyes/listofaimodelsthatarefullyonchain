@@ -26,23 +26,55 @@ test("odd-length calldata is rejected", () => {
 test("unknown and duplicate fact labels are rejected", () => {
   const entry = copyValid();
   entry.facts = [
-    ...entry.facts,
+    ["TYPE", "a network"],
     ["CHAIN", "not a fact"],
-    ["TASK", "one"],
-    ["TASK", "two"],
+    ["TRAINING", "one"],
+    ["TRAINING", "two"],
   ];
   assert.throws(
     () => parseModelEntry(entry, `${entry.slug}.json`),
-    /unknown fact label "CHAIN"; valid labels are:[\s\S]*"TASK" is duplicated/,
+    /unknown fact label "CHAIN"; valid labels are:[\s\S]*"TRAINING" is duplicated/,
   );
 });
 
 test("the core fact labels are required", () => {
   const entry = copyValid();
-  entry.facts = [["TASK", "XOR"]];
+  entry.facts = [["TRAINING", "trained offchain"], ["TRAINING", "x"], ["TRAINING", "y"], ["TRAINING", "z"]];
   assert.throws(
     () => parseModelEntry(entry, `${entry.slug}.json`),
-    /missing required fact label "ARCHITECTURE"[\s\S]*"WEIGHTS"[\s\S]*"OUTPUT"/,
+    /missing required fact label "TYPE"[\s\S]*"SIZE"[\s\S]*"STORAGE"[\s\S]*"OUTPUT"/,
+  );
+});
+
+test("facts must follow the fixed order", () => {
+  const entry = copyValid();
+  const [first, ...rest] = entry.facts;
+  entry.facts = [...rest, first];
+  assert.throws(
+    () => parseModelEntry(entry, `${entry.slug}.json`),
+    /facts must follow the order TYPE, SIZE, STORAGE, TRAINING, OUTPUT/,
+  );
+});
+
+test("SIZE values must contain a number", () => {
+  const entry = copyValid();
+  entry.facts = entry.facts.map(([label, value]) =>
+    label === "SIZE" ? [label, "many weights"] : [label, value],
+  ) as [string, string][];
+  assert.throws(
+    () => parseModelEntry(entry, `${entry.slug}.json`),
+    /SIZE value "many weights" must contain a number/,
+  );
+});
+
+test("STORAGE values must name where the weights live", () => {
+  const entry = copyValid();
+  entry.facts = entry.facts.map(([label, value]) =>
+    label === "STORAGE" ? [label, "on IPFS"] : [label, value],
+  ) as [string, string][];
+  assert.throws(
+    () => parseModelEntry(entry, `${entry.slug}.json`),
+    /STORAGE value "on IPFS" must name where the weights live: contract storage, data contracts, bytecode, derived at read time/,
   );
 });
 

@@ -5,12 +5,10 @@
   "year": 2025,
   "address": "0x4512759606f9E680361DD76C4c17F92031De7AcD",
   "facts": [
-    ["ARCHITECTURE", "GAN generator, single upsampling block"],
-    ["PIPELINE", "16-dim noise → dense 4608 → 6×4×192 → batchnorm → ReLU → conv transpose"],
-    ["WEIGHTS", "79,680 int16 fixed-point, in SSTORE2 data contracts"],
-    ["ACTIVATION", "ReLU; rational tanh approximation on the output layer"],
-    ["INPUTS", "a 16-byte seed chosen by the collector at mint"],
-    ["OUTPUT", "12×8 RGB fingerprint, rendered as an onchain SVG"]
+    ["TYPE", "GAN generator, first stage (single upsampling block)"],
+    ["SIZE", "79,680 weights"],
+    ["STORAGE", "data contracts (SSTORE2); int16 fixed-point"],
+    ["OUTPUT", "12×8 RGB fingerprint, drawn as an SVG image inside Ethereum"]
   ],
   "description": "The first collection of Higgs, an AI artist that diid built. The contract holds the first stage of the GAN generator; its weights live in data contracts on Ethereum. fingerprintSvg() runs the network inside Ethereum on a 16-byte seed and returns a 12×8 RGB fingerprint as an SVG image. The large display images are offchain; the check here covers only the onchain generator.",
   "call": {

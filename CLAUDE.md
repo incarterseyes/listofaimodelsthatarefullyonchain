@@ -22,9 +22,9 @@ pointers are not onchain storage. Full contributor rules: CONTRIBUTING.md.
 - `models/*.json` — the registry. One file per model; filename must equal the
   `slug` field. This is the only thing most PRs should touch.
 - `schema/model.schema.json` — JSON Schema for entries. `lib/models.ts` layers
-  extra invariants on top (closed facts vocabulary with required
-  ARCHITECTURE/WEIGHTS/OUTPUT labels, valid links) and fails the build on any
-  violation.
+  extra invariants on top (fixed facts vocabulary — TYPE/SIZE/STORAGE/OUTPUT
+  required plus optional TRAINING, in that order, with per-label value shapes —
+  and valid links) and fails the build on any violation.
 - `lib/ethCall.ts` — verification core, framework-free JSON-RPC (no viem/ethers
   by design). It probes the hardcoded Ethereum mainnet RPC list (`RPC_URLS`),
   pins the endpoints to one block hash, checks deployed bytecode, runs the

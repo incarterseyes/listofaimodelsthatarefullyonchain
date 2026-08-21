@@ -22,8 +22,8 @@
     },
     "facts": {
       "type": "array",
-      "minItems": 1,
-      "maxItems": 12,
+      "minItems": 4,
+      "maxItems": 5,
       "uniqueItems": true,
       "items": {
         "type": "array",
@@ -35,7 +35,7 @@
         "maxItems": 2,
         "items": false
       },
-      "description": "LABEL/VALUE pairs rendered as a table. Labels come from the closed vocabulary in lib/models.ts (see CONTRIBUTING.md); ARCHITECTURE, WEIGHTS, and OUTPUT are required, e.g. [\"ARCHITECTURE\", \"2-2-1 MLP\"]."
+      "description": "LABEL/VALUE pairs rendered as the entry's table: the reader's questions, answered in a fixed order. TYPE, SIZE, STORAGE, OUTPUT are required; TRAINING is the one optional row, between STORAGE and OUTPUT. Full rules in lib/models.ts and CONTRIBUTING.md."
     },
     "description": { "type": "string", "minLength": 1, "maxLength": 700, "pattern": "\\S" },
     "call": {
