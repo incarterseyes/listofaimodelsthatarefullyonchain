@@ -5,12 +5,10 @@
   "year": 2026,
   "address": "0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3",
   "facts": [
-    ["ARCHITECTURE", "5-layer Llama-style transformer"],
-    ["DIMENSIONS", "dim 48, hidden 128, 8 heads, grouped-query attention"],
-    ["VOCABULARY", "2048 BPE tokens"],
-    ["WEIGHTS", "INT8 per-channel quantized, stored in onchain data contracts"],
-    ["INFERENCE", "RoPE, RMSNorm, SiLU, KV cache — all in EVM opcodes"],
-    ["OUTPUT", "one aphorism per NFT, rendered as onchain SVG"]
+    ["TYPE", "5-layer transformer language model (Llama-style)"],
+    ["SIZE", "dim 48, hidden 128, 8 heads, 2,048-token vocabulary"],
+    ["STORAGE", "data contracts; int8 quantized"],
+    ["OUTPUT", "one aphorism per NFT, drawn as an SVG image inside Ethereum"]
   ],
   "description": "This contract is a complete transformer language model that runs inside Ethereum. Data contracts on Ethereum store its weights. A companion NFT contract calls the model to write one permanent aphorism for each token. The model also draws the text as an SVG image inside Ethereum. The address here is the language model itself.",
   "call": {
@@ -25,8 +23,6 @@
   },
   "links": [
     { "label": "SITE", "url": "https://attention.diid.art" },
-    { "label": "MODEL", "url": "https://etherscan.io/address/0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3" },
-    { "label": "NFT", "url": "https://etherscan.io/address/0x12fd3dB5Ae10615873a4eadbE4085d0698965139" },
-    { "label": "SOURCIFY", "url": "https://sourcify.dev/server/v2/contract/1/0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3" }
+    { "label": "CONTRACT", "url": "https://evm.now/address/0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3" }
   ]
 }

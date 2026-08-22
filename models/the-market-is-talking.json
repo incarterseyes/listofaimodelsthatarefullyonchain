@@ -5,12 +5,10 @@
   "year": 2026,
   "address": "0xd6D8555E131c0C431601aF62141A61a9b1aa6b13",
   "facts": [
-    ["ARCHITECTURE", "two-layer deep echo-state network"],
-    ["NEURONS", "20 hidden (two baskets of 10 ERC-20 markets), 4 inputs"],
-    ["WEIGHTS", "derived each block from market correlations, not stored"],
-    ["RENDERER", "engine.js + renderer.js on EthFS, served via scripty.sol"],
-    ["MATH", "fixed-point BigInt, integer tanh — bit-reproducible"],
-    ["OUTPUT", "one deterministic oracular sentence per block"]
+    ["TYPE", "two-layer echo-state network"],
+    ["SIZE", "20 hidden neurons, 4 inputs"],
+    ["STORAGE", "derived at read time — each block's weights come from live market activity, not stored"],
+    ["OUTPUT", "one deterministic sentence per block"]
   ],
   "description": "This network reads the market itself. Its hidden layers are two baskets of live token markets. Each block, it derives fresh weights from the trade activity of those tokens. Ethereum stores the renderer program; your browser runs it. The output is one sentence per block, from a 299-word vocabulary. stateAt() returns the exact state at any past block, so anyone can compute each sentence again.",
   "call": {
@@ -24,9 +22,7 @@
   },
   "links": [
     { "label": "SITE", "url": "https://felixfelixfelix.com/tmit" },
-    { "label": "INSTRUMENT", "url": "https://etherscan.io/address/0xd6D8555E131c0C431601aF62141A61a9b1aa6b13" },
-    { "label": "RENDERER", "url": "https://etherscan.io/address/0x0BDC00fe1d7924dd5893B092B7ed0e3ABcceCEF5" },
-    { "label": "SOURCIFY", "url": "https://sourcify.dev/server/v2/contract/1/0xd6D8555E131c0C431601aF62141A61a9b1aa6b13" },
-    { "label": "WHITEPAPER", "url": "https://tqxcpqc4alqy3gzsf5nn6uvwfye323jo6iis5plmpgtukai33g5q.arweave.net/nC4nwFwC4Y2bMi9a31K2Lgm9bS7yES69bHmnRQEb2bs" }
+    { "label": "ABOUT", "url": "https://tqxcpqc4alqy3gzsf5nn6uvwfye323jo6iis5plmpgtukai33g5q.arweave.net/nC4nwFwC4Y2bMi9a31K2Lgm9bS7yES69bHmnRQEb2bs" },
+    { "label": "CONTRACT", "url": "https://evm.now/address/0xd6D8555E131c0C431601aF62141A61a9b1aa6b13" }
   ]
 }
