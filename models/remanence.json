@@ -1,0 +1,28 @@
+{
+  "slug": "remanence",
+  "title": "remanence",
+  "author": "diid",
+  "year": 2026,
+  "address": "0x788Ee0B4Fb97657Cc2F35829d19C0f129c349B5a",
+  "facts": [
+    ["TYPE", "convolutional image decoder (4 conv layers, two output heads)"],
+    ["SIZE", "1,512 conv weights (int16) plus 110,592 stored latent values"],
+    ["STORAGE", "data contracts (SSTORE2) — weights, activation tables, and 16 painting latents"],
+    ["OUTPUT", "one 192×144 indexed-color BMP, computed inside the EVM"]
+  ],
+  "description": "remanence stores sixteen paintings on Ethereum as compressed fragments. A small neural decoder turns fragments back into a picture. The decoder weights and the fragments are in data contracts. The model runs inside Ethereum: one read-only call runs every layer and returns a finished image. Collectors combine fragments to restore a painting, or mix paintings into a chimera.",
+  "call": {
+    "calldata": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000001",
+    "expectedReturnBytes": 138432,
+    "note": "tokenURI(1) — runs the decoder in EVM opcodes on token 1's fragments and returns the image as token metadata"
+  },
+  "preview": {
+    "kind": "token-uri",
+    "note": "The EVM computes this image at call time from token 1's fragments. If the owner burns token 1 in combine(), this call stops working."
+  },
+  "links": [
+    { "label": "SITE", "url": "https://remanence.diid.art/" },
+    { "label": "ABOUT", "url": "https://remanence.diid.art/about" },
+    { "label": "CONTRACT", "url": "https://evm.now/address/0x788Ee0B4Fb97657Cc2F35829d19C0f129c349B5a" }
+  ]
+}
