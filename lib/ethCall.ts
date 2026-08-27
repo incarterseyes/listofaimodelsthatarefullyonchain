@@ -1,9 +1,15 @@
 import type { CallTarget } from "./types";
 
 // Ethereum mainnet endpoints; the quorum below requires >= 2 to agree.
+// Entries that decode an image inside the EVM need more than the 50M gas some
+// public nodes allow one eth_call, and the same host can answer from a capped
+// backend on one request and an uncapped one on the next. The list is wide
+// enough that two endpoints still run those calls to the end.
 export const RPC_URLS = [
   "https://ethereum-rpc.publicnode.com",
   "https://rpc.mevblocker.io",
+  "https://eth-mainnet.public.blastapi.io",
+  "https://mainnet.gateway.tenderly.co",
   "https://eth.drpc.org",
 ] as const;
 const CHAIN_ID = 1;
