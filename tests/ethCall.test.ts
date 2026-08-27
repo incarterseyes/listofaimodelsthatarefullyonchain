@@ -248,6 +248,126 @@ test("two agreeing endpoints can tolerate one unavailable provider", async (cont
   );
 });
 
+test("one endpoint that refuses to run the call does not veto a quorum", async (context) => {
+  context.mock.method(globalThis, "fetch", async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => {
+    const method = requestMethod(init);
+    // A public node that caps eth_call gas rejects the call with a bare
+    // "execution reverted" while the others run it to the end.
+    if (method === "eth_call" && String(input) === endpointUrls[0]) {
+      return rpcResponse({
+        jsonrpc: "2.0",
+        id: 1,
+        error: { code: 3, message: "execution reverted", data: "0x" },
+      });
+    }
+    return successFor(method);
+  });
+
+  const result = await performCall(target);
+
+  assert.equal(result.status, "returned");
+  assert.equal(
+    result.status === "returned" ? result.providers : 0,
+    endpointUrls.length - 1,
+  );
+  assert.deepEqual(
+    result.status === "returned" ? (result.refusals?.length ?? 0) : 0,
+    1,
+  );
+  const described = describeResult(result);
+  assert.equal(described.ok, true);
+  assert.match(described.details?.join(" ") ?? "", /refused to run the call/);
+});
+
+test("a refusal is still a failure when every endpoint reverts", async (context) => {
+  context.mock.method(globalThis, "fetch", async (
+    _input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => {
+    const method = requestMethod(init);
+    if (method === "eth_call") {
+      return rpcResponse({
+        jsonrpc: "2.0",
+        id: 1,
+        error: { code: 3, message: "execution reverted", data: "0x" },
+      });
+    }
+    return successFor(method);
+  });
+
+  assert.equal((await performCall(target)).status, "reverted");
+});
+
+test("a refusal cannot rescue endpoints that disagree on the bytes", async (context) => {
+  context.mock.method(globalThis, "fetch", async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => {
+    const method = requestMethod(init);
+    if (method === "eth_call" && String(input) === endpointUrls[0]) {
+      return rpcResponse({
+        jsonrpc: "2.0",
+        id: 1,
+        error: { code: 3, message: "execution reverted", data: "0x" },
+      });
+    }
+    return successFor(
+      method,
+      String(input) === endpointUrls[1] ? "0xaa" : "0xbb",
+    );
+  });
+
+  assert.equal((await performCall(target)).status, "disagreement");
+});
+
+test("a refusal cannot mask a differing block hash", async (context) => {
+  context.mock.method(globalThis, "fetch", async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => {
+    const method = requestMethod(init);
+    if (method === "eth_call" && String(input) === endpointUrls[0]) {
+      return rpcResponse({
+        jsonrpc: "2.0",
+        id: 1,
+        error: { code: 3, message: "execution reverted", data: "0x" },
+      });
+    }
+    if (method === "eth_getBlockByNumber" && String(input) === endpointUrls[1]) {
+      return rpcResponse({
+        jsonrpc: "2.0",
+        id: 1,
+        result: { number: BLOCK_NUMBER, hash: `0x${"cd".repeat(32)}` },
+      });
+    }
+    return successFor(method);
+  });
+
+  assert.equal((await performCall(target)).status, "disagreement");
+});
+
+test("a single executing endpoint cannot form a quorum on its own", async (context) => {
+  context.mock.method(globalThis, "fetch", async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => {
+    const method = requestMethod(init);
+    if (method === "eth_call" && String(input) !== endpointUrls.at(-1)) {
+      return rpcResponse({
+        jsonrpc: "2.0",
+        id: 1,
+        error: { code: 3, message: "execution reverted", data: "0x" },
+      });
+    }
+    return successFor(method);
+  });
+
+  assert.equal((await performCall(target)).status, "disagreement");
+});
+
 test("providers are compared at the same available block", async (context) => {
   const blockTags: unknown[] = [];
   const blockSelectors: unknown[] = [];

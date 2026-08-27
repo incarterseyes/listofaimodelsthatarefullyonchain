@@ -23,6 +23,9 @@ async function main() {
     const described = describeResult(result);
     if (described.ok) {
       console.log(`✓ ${entry.slug}: ${described.message}`);
+      for (const detail of described.details ?? []) {
+        console.log(`  ${detail}`);
+      }
       continue;
     }
 
