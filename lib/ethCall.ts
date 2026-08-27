@@ -162,6 +162,9 @@ type VerifiedResult =
 type ReturnedResult = Extract<VerifiedResult, { status: "returned" }> & {
   blockNumber: Hex;
   providers: number;
+  // Endpoints that agreed on the block and the bytecode but refused to run the
+  // call at all. Reported, never counted as providers.
+  refusals?: string[];
 };
 
 export type CallResult =
@@ -382,19 +385,37 @@ export async function performCall(entry: CallTarget): Promise<CallResult> {
     };
   }
 
-  const agreementKeys = completed.map(
+  // The chain view has to match everywhere: a different block hash or a
+  // different bytecode is a real disagreement about state, never tolerated.
+  const chainKeys = completed.map(
+    ({ blockHash, code }) => `${blockHash.toLowerCase()}:${code.toLowerCase()}`,
+  );
+
+  // An endpoint that refuses to execute is not a second opinion about state.
+  // Public nodes cap eth_call gas, so a heavy decode can be rejected by one
+  // provider while the others run it to the end. Set those refusals aside when
+  // the rest agree, and report them alongside the result. A contract that
+  // really reverts reverts on every endpoint, so `executed` is empty there and
+  // the revert is still reported as a failure.
+  const executed = completed.filter(({ result }) => result.status !== "reverted");
+  const quorum = executed.length >= 2 ? executed : completed;
+  const refusals = completed
+    .filter((check) => !quorum.includes(check))
+    .map((check) => summarizeCheck(check, blockTag));
+
+  const agreementKeys = quorum.map(
     ({ blockHash, code, result }) =>
       `${blockHash.toLowerCase()}:${code.toLowerCase()}:${outcomeKey(result)}`,
   );
-  if (new Set(agreementKeys).size > 1) {
+  if (new Set(chainKeys).size > 1 || new Set(agreementKeys).size > 1) {
     return {
       status: "disagreement",
       observations: checks.map((check) => summarizeCheck(check, blockTag)),
     };
   }
 
-  const agreedResult = completed[0].result;
-  if (completed.length < 2) {
+  const agreedResult = quorum[0].result;
+  if (quorum.length < 2) {
     return {
       status: "unconfirmed",
       result: agreedResult,
@@ -406,7 +427,8 @@ export async function performCall(entry: CallTarget): Promise<CallResult> {
     return {
       ...agreedResult,
       blockNumber: blockTag,
-      providers: completed.length,
+      providers: quorum.length,
+      ...(refusals.length > 0 ? { refusals } : {}),
     };
   }
   return agreedResult;
@@ -426,6 +448,14 @@ export function describeResult(result: CallResult): CallDescription {
       return {
         ok: true,
         message: `passed: ${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} that the contract code exists and the call returns the expected ${result.byteLength} bytes.`,
+        ...(result.refusals
+          ? {
+              details: [
+                "these servers agreed on the block and the contract code, but refused to run the call:",
+                ...result.refusals,
+              ],
+            }
+          : {}),
       };
     case "empty":
       return { ok: false, message: "failed: the call returned no bytes." };
