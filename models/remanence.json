@@ -12,13 +12,13 @@
   ],
   "description": "remanence stores sixteen paintings on Ethereum as compressed fragments. A small neural decoder turns fragments back into a picture. The decoder weights and the fragments are in data contracts. The model runs inside Ethereum: one read-only call runs every layer and returns a finished image. Collectors combine fragments to restore a painting, or mix paintings into a chimera.",
   "call": {
-    "calldata": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000001",
-    "expectedReturnBytes": 138432,
-    "note": "tokenURI(1) — runs the decoder in EVM opcodes on token 1's fragments and returns the image as token metadata"
+    "calldata": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000065",
+    "expectedReturnBytes": 138464,
+    "note": "tokenURI(101) — runs the decoder in EVM opcodes on token 101's fragments and returns the image as token metadata"
   },
   "preview": {
     "kind": "token-uri",
-    "note": "The EVM computes this image at call time from token 1's fragments. If the owner burns token 1 in combine(), this call stops working."
+    "note": "The EVM computes this image at call time from token 101's fragments. If the owner burns token 101 in combine(), this call stops working."
   },
   "links": [
     { "label": "SITE", "url": "https://remanence.diid.art/" },
