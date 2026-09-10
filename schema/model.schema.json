@@ -4,7 +4,7 @@
   "title": "Onchain Model Register entry",
   "description": "One fully-onchain neural network. The model's weights AND its inference/renderer code must live on Ethereum mainnet. The file name must be <slug>.json.",
   "type": "object",
-  "required": ["slug", "title", "author", "year", "address", "facts", "description", "call", "links"],
+  "required": ["slug", "title", "author", "year", "month", "address", "facts", "description", "call", "links"],
   "additionalProperties": false,
   "properties": {
     "slug": {
@@ -14,7 +14,8 @@
     },
     "title": { "type": "string", "minLength": 1, "maxLength": 80, "pattern": "\\S" },
     "author": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "\\S" },
-    "year": { "type": "integer", "minimum": 2015, "maximum": 2100, "description": "Year of mainnet deployment." },
+    "year": { "type": "integer", "minimum": 2015, "maximum": 2100, "description": "Year the model was released on mainnet." },
+    "month": { "type": "integer", "minimum": 1, "maximum": 12, "description": "Month the model was released on mainnet (1–12). For shared contracts, use the project's release, not the core contract's deployment." },
     "address": {
       "type": "string",
       "pattern": "^0x[0-9a-fA-F]{40}$",

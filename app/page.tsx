@@ -1,4 +1,5 @@
 import { loadModels } from "@/lib/models";
+import { formatModelDate } from "@/lib/modelDate";
 import { Card } from "@/components/Card";
 import { SimpleTable } from "@/components/SimpleTable";
 import { EntryAccordion } from "@/components/EntryAccordion";
@@ -24,7 +25,7 @@ export default function Page() {
       {model.title}
     </a>,
     model.author,
-    String(model.year),
+    formatModelDate(model),
   ]);
 
   return (
@@ -55,7 +56,7 @@ export default function Page() {
           <Card title="CENSUS">
             <SimpleTable
               caption="Registered onchain models"
-              header={["MODEL", "AUTHOR", "YEAR"]}
+              header={["MODEL", "AUTHOR", "DATE"]}
               rows={census}
               firstColumnHeader
             />

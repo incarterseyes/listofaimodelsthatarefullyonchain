@@ -3,6 +3,7 @@
   "title": "HELLO WORLD COMPUTER",
   "author": "Han × 1001",
   "year": 2026,
+  "month": 6,
   "address": "0x6901afceb66564a9b6E7193561fB78F0878b5906",
   "facts": [
     ["TYPE", "single-layer perceptron"],

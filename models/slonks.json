@@ -3,6 +3,7 @@
   "title": "SLONKS",
   "author": "Blockhash",
   "year": 2026,
+  "month": 5,
   "address": "0xCa116243a2013ED33015c776ee37310b199Ee80c",
   "facts": [
     ["TYPE", "candidate-palette classifier — per-pixel 18-way argmax over learned embeddings"],

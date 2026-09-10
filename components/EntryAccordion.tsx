@@ -1,4 +1,5 @@
 import type { ModelEntry } from "@/lib/types";
+import { formatModelDate } from "@/lib/modelDate";
 import { Card } from "./Card";
 import { SimpleTable } from "./SimpleTable";
 import { CallContractButton } from "./CallContractButton";
@@ -7,7 +8,7 @@ export function EntryAccordion({ entry }: { entry: ModelEntry }) {
   const meta: [string, string][] = [
     ...entry.facts,
     ["ADDRESS", entry.address],
-    ["YEAR", String(entry.year)],
+    ["DATE", formatModelDate(entry)],
   ];
 
   return (

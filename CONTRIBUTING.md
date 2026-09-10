@@ -23,6 +23,12 @@ What does **not** qualify:
    is documented in `schema/model.schema.json`.
 2. Name the file `<slug>.json`, matching the `slug` field.
 3. Fill in the `facts` table: answer the reader's questions listed below.
+   Set `year` and `month` (1–12) to the model's mainnet release date. For a
+   shared contract, use the project's release date, not the core contract's
+   deployment date. The list sorts oldest first by year, then month, then slug
+   alphabetically for entries in the same month. A model with a later date
+   will appear at the bottom automatically. Record the date evidence in
+   `models/README.md`.
 4. `call.calldata` must be even-length, pre-encoded calldata for the inference or
    renderer-artifact function itself.
 5. Set `call.expectedReturnBytes` to the exact raw JSON-RPC result length,
@@ -79,7 +85,7 @@ Value style: plain words first, with the precise technical term in parentheses
 — `data contracts (SSTORE2)`. Detail that does not answer one of these
 questions belongs in the description or `call.note`.
 
-Do not add `ADDRESS` or `YEAR` facts — the site renders those rows from the
+Do not add `ADDRESS`, `YEAR`, `MONTH`, or `DATE` facts — the site renders the address and date from the
 top-level fields.
 
 ## Links

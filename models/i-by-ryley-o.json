@@ -3,6 +3,7 @@
   "title": "I.",
   "author": "ryley-o.eth",
   "year": 2025,
+  "month": 3,
   "address": "0x000000A35301Fa5784E820F489003FfcfFdc69a6",
   "facts": [
     ["TYPE", "conditional VAE-GAN generator (cVAE-GAN)"],

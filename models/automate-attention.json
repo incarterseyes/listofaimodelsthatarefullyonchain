@@ -3,6 +3,7 @@
   "title": "AUTOMATE ATTENTION",
   "author": "diid",
   "year": 2026,
+  "month": 4,
   "address": "0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3",
   "facts": [
     ["TYPE", "5-layer transformer language model (Llama-style)"],

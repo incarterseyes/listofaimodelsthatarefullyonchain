@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import { loadModels, parseModelEntry } from "@/lib/models";
 
@@ -12,6 +15,40 @@ test("the checked-in registry passes deterministic validation", () => {
   const entries = loadModels();
   assert.ok(entries.length > 0);
   assert.equal(new Set(entries.map(({ slug }) => slug)).size, entries.length);
+});
+
+test("a month from 1 through 12 is required", () => {
+  for (const month of [undefined, 0, 13, 1.5, "8"]) {
+    assert.throws(
+      () => parseModelEntry({ ...copyValid(), month }, `${valid.slug}.json`),
+      /failed schema validation/,
+    );
+  }
+});
+
+test("registry sorts by year and month, with alphabetical ties and later additions last", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "model-order-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, "models"));
+  for (const [slug, year, month] of [
+    ["a-new-model", 2025, 9],
+    ["remanence", 2025, 8],
+    ["z-previous-year", 2024, 12],
+    ["z-earlier-month", 2025, 1],
+    ["a-same-month", 2025, 8],
+  ] as const) {
+    fs.writeFileSync(
+      path.join(root, "models", `${slug}.json`),
+      JSON.stringify({ ...copyValid(), slug, year, month }),
+    );
+  }
+  assert.deepEqual(loadModels(root).map(({ slug }) => slug), [
+    "z-previous-year",
+    "z-earlier-month",
+    "a-same-month",
+    "remanence",
+    "a-new-model",
+  ]);
 });
 
 test("odd-length calldata is rejected", () => {
