@@ -1,11 +1,11 @@
 ---
 name: add-model-pr
-description: Add a model to the register end to end — qualify the candidate contract, write models/<slug>.json, open the PR. Use when the user names a candidate model or contract to add, asks whether something qualifies, or wants a registry PR opened.
+description: Add a model to the register end to end — qualify the candidate contract, write its model JSON and date-evidence row, open the PR. Use when the user names a candidate model or contract to add, asks whether something qualifies, or wants a registry PR opened.
 ---
 
 # Add a model to the register
 
-One run = one model = one file in `models/` = one PR. Three phases:
+One run = one model JSON plus its `models/README.md` evidence row = one PR. Three phases:
 qualify, write the entry, open the PR. CONTRIBUTING.md is the rule text;
 `lib/models.ts` enforces the facts/links vocabulary; this is the procedure.
 
@@ -62,27 +62,34 @@ On `FAILS` or `NEEDS-INFO`, report and stop.
 1. Read the schema, `lib/models.ts`, CONTRIBUTING.md, and one existing
    entry as the template. Edit as text — a serializer rewrite clobbers
    the formatting.
-2. `year` = mainnet deployment year; `author` as the project states it;
-   `title` per the register's convention; `address` EIP-55 checksummed.
+2. Require both `year` and `month` (1–12) for the model's mainnet release,
+   no later than the current UTC month. For dedicated model contracts, use
+   the creation transaction timestamp; for shared contracts, use the
+   project's release date, not the core contract's deployment. Add a row
+   with linked date evidence to `models/README.md` in chronological order.
+   Sort by year, month, then slug for ties; the page displays only the year.
+   Set `author` as the project states it, `title` per the register's
+   convention, and `address` EIP-55 checksummed.
 3. Run the `simplified-technical-english-asd-ste100` skill on
    `description`, `call.note`, and `preview.note` drafts.
 4. Re-derive `calldata` programmatically right before writing — never
    from a paste. `expectedReturnBytes` = the Phase 1 measurement.
 5. Pick the `preview.kind` for the return type; omit `preview` when
    nothing shows the return honestly, and say why in the PR body.
-6. **Approval gate**: present the draft JSON and Phase 1 evidence as
-   plain text; write the file only after the user approves.
+6. **Approval gate**: present the draft JSON, date-evidence row, and Phase 1
+   evidence as plain text; write the files only after the user approves.
 7. `npm run check`, then `npm run verify` — both green. A one-endpoint
    "out of gas" flake deserves a rerun before you treat it as real.
 
 ## Phase 3 — Open the PR
 
-Branch `add-<slug>` off main; the PR touches only `models/<slug>.json`.
+Branch `add-<slug>` off main; the PR touches `models/<slug>.json` and adds
+its date-evidence row to `models/README.md`.
 Keep every command non-interactive so the block can be handed to the user:
 
 ```
 git checkout -b add-<slug> main
-git add models/<slug>.json
+git add models/<slug>.json models/README.md
 git commit -m "Add <title> model by <author> to registry"
 git push -u origin add-<slug>
 gh pr create --base main --title "Add <title> model by <author> to registry" --body "$(cat <<'EOF'

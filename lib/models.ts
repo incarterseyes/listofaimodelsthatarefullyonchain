@@ -41,11 +41,17 @@ export function contractLinkUrl(address: string): string {
   return `https://evm.now/address/${address}`;
 }
 
-function semanticProblems(entry: ModelEntry, currentYear: number): string[] {
+function semanticProblems(
+  entry: ModelEntry,
+  currentYear: number,
+  currentMonth: number,
+): string[] {
   const problems: string[] = [];
 
   if (entry.year > currentYear) {
     problems.push(`year ${entry.year} is in the future`);
+  } else if (entry.year === currentYear && entry.month > currentMonth) {
+    problems.push(`month ${entry.month} of ${entry.year} is in the future`);
   }
 
   const factLabels = new Set<string>();
@@ -176,6 +182,7 @@ export function parseModelEntry(
   raw: unknown,
   file: string,
   currentYear = new Date().getUTCFullYear(),
+  currentMonth = new Date().getUTCMonth() + 1,
 ): ModelEntry {
   if (!matchesSchema(raw)) {
     throw new Error(
@@ -191,7 +198,7 @@ export function parseModelEntry(
     );
   }
 
-  const problems = semanticProblems(entry, currentYear);
+  const problems = semanticProblems(entry, currentYear, currentMonth);
   if (problems.length > 0) {
     throw new Error(`models/${file} failed registry validation:\n${problems.join("\n")}`);
   }

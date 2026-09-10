@@ -26,6 +26,23 @@ test("a month from 1 through 12 is required", () => {
   }
 });
 
+test("release dates after the current UTC month are rejected", () => {
+  for (const [year, month] of [[2026, 10], [2026, 12], [2027, 1]]) {
+    assert.throws(
+      () => parseModelEntry({ ...copyValid(), year, month }, `${valid.slug}.json`, 2026, 9),
+      /is in the future/,
+    );
+  }
+});
+
+test("the current month and past release dates are accepted", () => {
+  for (const [year, month] of [[2026, 9], [2026, 8], [2025, 12]]) {
+    assert.doesNotThrow(
+      () => parseModelEntry({ ...copyValid(), year, month }, `${valid.slug}.json`, 2026, 9),
+    );
+  }
+});
+
 test("registry sorts by year and month, with alphabetical ties and later additions last", (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "model-order-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
