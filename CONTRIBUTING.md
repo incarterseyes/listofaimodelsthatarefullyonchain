@@ -27,7 +27,8 @@ What does **not** qualify:
    shared contract, use the project's release date, not the core contract's
    deployment date. The list sorts oldest first by year, then month, then slug
    alphabetically for entries in the same month. A model with a later date
-   will appear at the bottom automatically. Record the date evidence in
+   will appear at the bottom automatically. The page displays only the year;
+   the month is used for sorting. Record the date evidence in
    `models/README.md`.
 4. `call.calldata` must be even-length, pre-encoded calldata for the inference or
    renderer-artifact function itself.
@@ -85,8 +86,8 @@ Value style: plain words first, with the precise technical term in parentheses
 — `data contracts (SSTORE2)`. Detail that does not answer one of these
 questions belongs in the description or `call.note`.
 
-Do not add `ADDRESS`, `YEAR`, `MONTH`, or `DATE` facts — the site renders the address and date from the
-top-level fields.
+Do not add `ADDRESS`, `YEAR`, `MONTH`, or `DATE` facts — the site renders the
+address and year from the top-level fields.
 
 ## Links
 

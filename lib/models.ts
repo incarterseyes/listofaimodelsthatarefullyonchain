@@ -10,7 +10,7 @@ const matchesSchema = ajv.compile(schema);
 // Fixed facts vocabulary: the questions a first-time reader asks, answered in
 // one fixed order so every entry reads the same way. TRAINING is the one
 // optional row. Values lead with plain words; the precise technical term
-// follows in parentheses. ADDRESS/DATE are never facts — the site renders
+// follows in parentheses. ADDRESS/YEAR are never facts — the site renders
 // those rows from the top-level fields.
 export const REQUIRED_FACT_LABELS = ["TYPE", "SIZE", "STORAGE", "OUTPUT"] as const;
 export const OPTIONAL_FACT_LABELS = ["TRAINING"] as const;
