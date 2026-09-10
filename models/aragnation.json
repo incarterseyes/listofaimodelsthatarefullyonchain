@@ -3,6 +3,7 @@
   "title": "ARAGNATION",
   "author": "Devi Parikh and Abhishek Das",
   "year": 2023,
+  "month": 2,
   "address": "0x99a9B7c1116f9ceEB1652de04d5969CcE509B069",
   "facts": [
     ["TYPE", "coordinate MLP (CPPN) — 5-32-32-32-32-32-32-3, ReLU"],

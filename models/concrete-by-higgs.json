@@ -3,6 +3,7 @@
   "title": "CONCRETE",
   "author": "Higgs × diid",
   "year": 2025,
+  "month": 2,
   "address": "0x4512759606f9E680361DD76C4c17F92031De7AcD",
   "facts": [
     ["TYPE", "GAN generator, first stage (single upsampling block)"],

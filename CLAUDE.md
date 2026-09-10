@@ -20,7 +20,8 @@ pointers are not onchain storage. Full contributor rules: CONTRIBUTING.md.
 ## How it works
 
 - `models/*.json` — the registry. One file per model; filename must equal the
-  `slug` field. This is the only thing most PRs should touch.
+  `slug` field. Model additions include the JSON and a linked date-evidence
+  row in `models/README.md`, in chronological order.
 - `schema/model.schema.json` — JSON Schema for entries. `lib/models.ts` layers
   extra invariants on top (fixed facts vocabulary — TYPE/SIZE/STORAGE/OUTPUT
   required plus optional TRAINING, in that order, with per-label value shapes —
@@ -48,6 +49,11 @@ pointers are not onchain storage. Full contributor rules: CONTRIBUTING.md.
 
 ## Conventions
 
+- Every model requires `year` and `month` (1–12) for its mainnet release,
+  no later than the current UTC month. Use the creation timestamp for a
+  dedicated model contract and the project's release date for a shared
+  contract, not the core contract's deployment. Sort by year, month, then
+  slug for ties; the page displays only the year.
 - Verify a new entry's address and calldata against a live node *before*
   adding it — never trust a README or project site for deployment claims.
 - `NEXT_PUBLIC_SITE_URL` is set only for production builds (see .env.example)

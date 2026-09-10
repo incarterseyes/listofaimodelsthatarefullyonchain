@@ -3,6 +3,7 @@
   "title": "INCHAINPEPEGAN",
   "author": "lifeonchain",
   "year": 2023,
+  "month": 2,
   "address": "0x65e9A5BbC1B26C0833B232355534cC404b0e69D4",
   "facts": [
     ["TYPE", "GAN image generator (DCGAN-style)"],

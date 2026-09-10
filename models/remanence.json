@@ -3,6 +3,7 @@
   "title": "remanence",
   "author": "diid",
   "year": 2026,
+  "month": 8,
   "address": "0x788Ee0B4Fb97657Cc2F35829d19C0f129c349B5a",
   "facts": [
     ["TYPE", "convolutional image decoder (4 conv layers, two output heads)"],

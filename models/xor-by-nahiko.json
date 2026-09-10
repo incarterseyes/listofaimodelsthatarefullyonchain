@@ -3,6 +3,7 @@
   "title": "陰XOR陽",
   "author": "nahiko",
   "year": 2021,
+  "month": 8,
   "address": "0x2A648cb23D3ADf1BB171Fabc0119eA3eb951841f",
   "facts": [
     ["TYPE", "two-layer neural network, 2-2-1 (MLP)"],

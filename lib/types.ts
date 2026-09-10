@@ -19,6 +19,7 @@ export interface ModelEntry {
   title: string;
   author: string;
   year: number;
+  month: number;
   address: `0x${string}`;
   facts: [string, string][];
   description: string;

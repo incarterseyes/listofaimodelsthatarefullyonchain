@@ -3,6 +3,7 @@
   "title": "THE MARKET IS TALKING",
   "author": "FelixFelixFelix",
   "year": 2026,
+  "month": 6,
   "address": "0xd6D8555E131c0C431601aF62141A61a9b1aa6b13",
   "facts": [
     ["TYPE", "two-layer echo-state network"],
