@@ -15,7 +15,20 @@
   "call": {
     "calldata": "0x8c3c9cdd00000000000000000000000000000000000000000000000000000000000001910000000000000000000000000000000000000000000000000000000000000003",
     "expectedReturnBytes": 10304,
-    "note": "projectScriptByIndex(401, 3) — reads part 3 of 7 of the onchain program; this part is entirely model-weight numbers"
+    "note": "projectScriptByIndex(401, part) — reads one part of the onchain program. Part 3 contains model weights.",
+    "input": {
+      "kind": "uint",
+      "label": "PROGRAM PART",
+      "example": "3",
+      "hint": "Choose a part from 0 to 6. This reads program text; it does not draw an artwork.",
+      "word": 1,
+      "max": "6"
+    },
+    "manualReturn": "text"
+  },
+  "preview": {
+    "kind": "text",
+    "note": "This is one part of the stored program. The project site runs the full program to draw the artwork."
   },
   "links": [
     { "label": "SITE", "url": "https://www.artblocks.io/collections/presents/projects/0x99a9b7c1116f9ceeb1652de04d5969cce509b069/401" },

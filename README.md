@@ -16,6 +16,36 @@ evidence of a reproducible onchain execution path; it is not, on its own, proof
 that arbitrary bytes implement the architecture described by an entry. The
 linked source and project evidence still require human review.
 
+Each supported entry starts with its registered example, ready for a one-click
+check. Visitors can edit the input, then select **Run check**. **Use example**
+restores the registered example without running it.
+Inputs are checked before any request goes to Ethereum. Changing an input
+clears the previous result.
+
+| Model | Manual input |
+| --- | --- |
+| Aragnation | Program part 0–6, within project 401 |
+| INCHAINPEPEGAN | Token ID (the generator also accepts unminted IDs) |
+| CONCRETE | 128-bit seed, in decimal or `0x` hexadecimal |
+| I. | Program part 0–23, within project 0 |
+| AUTOMATE ATTENTION | 1–512 vocabulary IDs, each from 0–2047, separated by spaces or commas |
+| SLONKS | CryptoPunk number 0–9999 |
+| HELLO WORLD COMPUTER | Lowercase letters and spaces; at most 8 words and 64 bytes |
+| THE MARKET IS TALKING | Block number for saved inputs and mood |
+| remanence | Existing token ID; burned tokens cannot return an image |
+
+The XOR and ARTIFICIAL AFTER ALL checks take no arguments. Program-part
+checks show stored source text, and the market check shows saved state;
+these checks do not run the browser renderers. Long model inputs can exceed
+public RPC execution limits.
+
+Automated verification keeps the registered example and its exact return
+size. Custom calls that can return different lengths validate their ABI
+format and decoded output once after RPC agreement. Both paths still require
+at least two RPCs to agree on the block, contract code, and complete return bytes.
+Unexpected output includes the expected format and the raw returned bytes
+for inspection.
+
 ## What qualifies
 
 A neural network qualifies only if both its weights and its executable model

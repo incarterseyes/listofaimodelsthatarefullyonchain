@@ -16,7 +16,16 @@
   "call": {
     "calldata": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000001",
     "expectedReturnBytes": 5536,
-    "note": "tokenURI(1) — runs the generator three times (one per frame) and builds the animated GIF inside Ethereum"
+    "note": "tokenURI(tokenId) — runs the generator three times and builds the animated GIF inside Ethereum.",
+    "input": {
+      "kind": "uint",
+      "label": "TOKEN ID",
+      "example": "1",
+      "hint": "Enter a token ID. The generator can also draw IDs that have not been minted.",
+      "word": 0,
+      "max": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    },
+    "manualReturn": "token-uri"
   },
   "preview": {
     "kind": "token-uri"

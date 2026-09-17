@@ -16,7 +16,15 @@
   "call": {
     "calldata": "0x045776c00000000000000000000000000000000000000000000000000000000000000000",
     "expectedReturnBytes": 640,
-    "note": "renderSourcePixels(0) — runs the model inside Ethereum for punk #0 and returns 576 palette indexes, one per pixel"
+    "note": "renderSourcePixels(punkId) — runs the model for the selected punk and returns 576 palette indexes, one per pixel.",
+    "input": {
+      "kind": "uint",
+      "label": "PUNK NUMBER",
+      "example": "0",
+      "hint": "Choose a CryptoPunk number from 0 to 9999.",
+      "word": 0,
+      "max": "9999"
+    }
   },
   "preview": {
     "kind": "grayscale-image",

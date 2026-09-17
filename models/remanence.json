@@ -15,11 +15,20 @@
   "call": {
     "calldata": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000065",
     "expectedReturnBytes": 138464,
-    "note": "tokenURI(101) — runs the decoder in EVM opcodes on token 101's fragments and returns the image as token metadata"
+    "note": "tokenURI(tokenId) — runs the decoder on the selected token’s fragments and returns its image as token metadata.",
+    "input": {
+      "kind": "uint",
+      "label": "TOKEN ID",
+      "example": "101",
+      "hint": "Enter an existing token ID. Burned tokens and IDs that have not been minted cannot return an image.",
+      "word": 0,
+      "max": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    },
+    "manualReturn": "token-uri"
   },
   "preview": {
     "kind": "token-uri",
-    "note": "The EVM computes this image at call time from token 101's fragments. If the owner burns token 101 in combine(), this call stops working."
+    "note": "Ethereum computes this image from the selected token’s fragments. If its owner burns the token, this call stops working."
   },
   "links": [
     { "label": "SITE", "url": "https://remanence.diid.art/" },

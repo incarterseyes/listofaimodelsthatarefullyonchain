@@ -35,6 +35,13 @@ pointers are not onchain storage. Full contributor rules: CONTRIBUTING.md.
 - `lib/preview.ts` + `components/OutputPreview.tsx` — decode a verified
   result's bytes per the entry's declarative `preview` field (image, ABI
   fields, logits, raw words) and render it after a successful check.
+- `lib/callInput.ts` — validate and encode visitor inputs declared by
+  `call.input`, keeping the registered contract and function fixed.
+  `call.manualReturn` selects a variable-length output format for custom
+  calls; `lib/abiReturn.ts` shares the byte/word decoders and validates ABI
+  offsets, lengths, and padding. Custom output is validated after RPC agreement.
+  Examples and CI retain the exact `expectedReturnBytes` check. Both paths
+  require byte-for-byte RPC agreement.
 - `app/` + `components/` — Next.js App Router, `output: "export"`, no server.
   The terminal/TUI look lives in `app/globals.css`; components are thin wrappers
   over those classes.

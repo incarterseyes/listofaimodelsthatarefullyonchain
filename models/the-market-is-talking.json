@@ -15,11 +15,20 @@
   "call": {
     "calldata": "0xeff86f130000000000000000000000000000000000000000000000000000000001869f00",
     "expectedReturnBytes": 416,
-    "note": "stateAt(25599744) — returns the saved inputs and mood state; the renderer rebuilds the network from these"
+    "note": "stateAt(blockNumber) — returns the saved inputs and mood for the selected block. The renderer uses these to rebuild the network.",
+    "input": {
+      "kind": "uint",
+      "label": "BLOCK NUMBER",
+      "example": "25599744",
+      "hint": "Enter an Ethereum block number. This reads saved model state; it does not generate the sentence.",
+      "word": 0,
+      "max": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    },
+    "manualReturn": "market-state"
   },
   "preview": {
-    "kind": "words",
-    "note": "Saved inputs and mood state. The renderer rebuilds the network and its sentence from these words in your browser."
+    "kind": "market-state",
+    "note": "The project’s renderer uses these saved values to rebuild the network and its sentence in your browser."
   },
   "links": [
     { "label": "SITE", "url": "https://felixfelixfelix.com/tmit" },

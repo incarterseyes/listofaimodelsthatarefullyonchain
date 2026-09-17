@@ -1,4 +1,5 @@
-import type { CallTarget } from "./types";
+import type { PreparedCallTarget, ReturnShape } from "./types";
+import { decodePreview } from "./preview";
 
 // Ethereum mainnet endpoints; the quorum below requires >= 2 to agree.
 // Entries that decode an image inside the EVM need more than the 50M gas some
@@ -173,8 +174,14 @@ type ReturnedResult = Extract<VerifiedResult, { status: "returned" }> & {
   refusals?: string[];
 };
 
+type InvalidOutputResult = Omit<ReturnedResult, "status"> & {
+  status: "invalid-output";
+  expectedShape: ReturnShape;
+};
+
 export type CallResult =
   | ReturnedResult
+  | InvalidOutputResult
   | Exclude<VerifiedResult, { status: "returned" }>
   | {
       status: "unconfirmed";
@@ -203,7 +210,7 @@ async function probeEndpoint(url: string): Promise<bigint> {
 
 async function verifyEndpoint(
   url: string,
-  entry: CallTarget,
+  entry: PreparedCallTarget,
   blockNumber: bigint,
   blockTag: Hex,
 ): Promise<{ blockHash: Hex; code: Hex; result: VerifiedResult }> {
@@ -258,7 +265,7 @@ async function verifyEndpoint(
   }
 
   const byteLength = (data.length - 2) / 2;
-  if (byteLength !== entry.call.expectedReturnBytes) {
+  if (entry.call.expectedReturnBytes !== undefined && byteLength !== entry.call.expectedReturnBytes) {
     return {
       blockHash,
       code,
@@ -296,7 +303,7 @@ function summarizeOutcome(result: VerifiedResult): string {
         result.bytes.length <= 22
           ? result.bytes
           : `${result.bytes.slice(0, 12)}…${result.bytes.slice(-8)}`;
-      return `returned ${result.byteLength} expected bytes (${preview})`;
+      return `returned ${result.byteLength} bytes (${preview})`;
     }
     case "empty":
       return "returned no bytes";
@@ -333,7 +340,7 @@ function summarizeCheck(check: EndpointCheck, blockTag: Hex): string {
   return `${endpointName(check.url)}: block ${BigInt(blockTag)} (${check.blockHash.slice(0, 12)}…), ${summarizeOutcome(check.result)}`;
 }
 
-export async function performCall(entry: CallTarget): Promise<CallResult> {
+export async function performCall(entry: PreparedCallTarget): Promise<CallResult> {
   const probes = await Promise.all(
     RPC_URLS.map(async (url) => {
       try {
@@ -430,12 +437,18 @@ export async function performCall(entry: CallTarget): Promise<CallResult> {
   }
 
   if (agreedResult.status === "returned") {
-    return {
+    const returned: ReturnedResult = {
       ...agreedResult,
       blockNumber: blockTag,
       providers: quorum.length,
       ...(refusals.length > 0 ? { refusals } : {}),
     };
+    // The entire payload already agrees across providers. Validate its shape
+    // once, after both the agreement and quorum checks have passed.
+    if (entry.call.returnShape && !decodePreview({ kind: entry.call.returnShape }, returned.bytes)) {
+      return { ...returned, status: "invalid-output", expectedShape: entry.call.returnShape };
+    }
+    return returned;
   }
   return agreedResult;
 }
@@ -453,7 +466,7 @@ export function describeResult(result: CallResult): CallDescription {
     case "returned":
       return {
         ok: true,
-        message: `passed: ${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} that the contract code exists and the call returns the expected ${result.byteLength} bytes.`,
+        message: `passed: ${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} that the contract code exists and the call returns the same ${result.byteLength} bytes.`,
         ...(result.refusals
           ? {
               details: [
@@ -469,6 +482,16 @@ export function describeResult(result: CallResult): CallDescription {
       return {
         ok: false,
         message: `failed: the call returned ${result.actualBytes} bytes; the entry expects ${result.expectedBytes}.`,
+      };
+    case "invalid-output":
+      return {
+        ok: false,
+        message: "failed: the returned bytes do not match this model's expected output format.",
+        details: [
+          `Expected output format: ${result.expectedShape}.`,
+          `${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} on ${result.byteLength} returned bytes.`,
+          ...(result.refusals ?? []),
+        ],
       };
     case "no-code":
       return {

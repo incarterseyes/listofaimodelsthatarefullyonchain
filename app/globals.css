@@ -238,6 +238,38 @@ table.simple tbody th{color:var(--theme-text)}
 .raw-result{color:var(--ansi-10-lime)}
 .rpc-observations{padding-left:2ch}
 
+.call-input{margin-top:var(--theme-line-height-base)}
+.call-input label{display:block;margin-bottom:1ch}
+.call-input input{
+  display:block;
+  width:100%;
+  min-width:0;
+  min-height:44px;
+  padding:1ch;
+  border:1px solid var(--theme-border);
+  border-radius:0;
+  background:var(--theme-background);
+  color:var(--theme-text);
+  font:inherit;
+}
+.call-input input::placeholder{color:var(--ansi-248-gray-66);opacity:1}
+.call-input input:disabled{opacity:.6}
+.call-input input[aria-invalid="true"]{border-style:dashed}
+.input-hint,.input-error{margin-top:1ch}
+.input-error{color:var(--theme-text)}
+.call-actions{margin-top:1ch}
+.example-action{color:var(--ansi-248-gray-66)}
+.example-action:hover{color:var(--theme-focused-foreground)}
+.preview-text{
+  max-height:24em;
+  overflow:auto;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  padding:1ch;
+  border:1px solid var(--theme-border-subdued);
+  font:inherit;
+}
+
 @media (max-width:700px){
   body{padding:1ch 1ch 10ch}
   .window{margin-right:1ch}

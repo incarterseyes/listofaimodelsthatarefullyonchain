@@ -15,7 +15,20 @@
   "call": {
     "calldata": "0x8c3c9cdd00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005",
     "expectedReturnBytes": 9952,
-    "note": "projectScriptByIndex(0, 5) — reads part 5 of 24 of the onchain program; parts 5–18 are the model weights (base64 text)"
+    "note": "projectScriptByIndex(0, part) — reads one part of the onchain program. Parts 5–18 contain compressed model weights.",
+    "input": {
+      "kind": "uint",
+      "label": "PROGRAM PART",
+      "example": "5",
+      "hint": "Choose a part from 0 to 23. This reads program text; it does not draw an eye.",
+      "word": 1,
+      "max": "23"
+    },
+    "manualReturn": "text"
+  },
+  "preview": {
+    "kind": "text",
+    "note": "This is one part of the stored program. The project site runs the full program to draw the artwork."
   },
   "links": [
     { "label": "SITE", "url": "https://www.artblocks.io/collection/i.-by-ryley-o.eth" },

@@ -122,10 +122,46 @@ renders the decoded result. Pick the `kind` matching your call's return type
   renders the embedded image. The image must be a self-contained `data:` URI —
   metadata pointing at an offchain image will not render.
 - `words` — fallback that lists each 32-byte word.
+- `text` — one ABI string containing a stored program part; shown as inert text.
+- `market-state` — the `(uint256, string, uint256, string)` saved-state tuple
+  returned by `stateAt`, with both block numbers and both strings decoded.
 
 Validation checks the preview against `expectedReturnBytes`. Add a `note`
 stating anything the preview cannot honestly show (for example, token IDs
 that need an offchain vocabulary to become text).
+
+## Manual inputs
+
+Keep `call.calldata` and `call.expectedReturnBytes` as a reproducible example
+for CI. Add `call.input` when the registered read-only function has an input
+the visitor can change. Every input needs `label`, `hint`, and `example`.
+The example must encode to exactly the registered calldata; validation rejects
+drift between the form and the CI call.
+
+- `uint`: `word` is the zero-based argument word to replace; `max` is a decimal
+  string. IDs use decimal digits. Set `allowHex: true` for seeds that also accept
+  `0x` hexadecimal. Other argument words, the selector, and the address stay fixed.
+- `text`: replaces the single string argument. `pattern` is a JavaScript
+  regular expression with the Unicode flag; use `^` and `$` to match the whole
+  input. `patternMessage` explains the allowed text to the visitor. `maxBytes`
+  bounds its UTF-8 size, and `maxWords` counts words separated by whitespace.
+  HELLO WORLD COMPUTER declares its lowercase-letter-and-space rule in its entry.
+- `uint-array`: replaces the single `uint16[]` argument. `maxValue` and
+  `maxItems` bound vocabulary IDs and sequence length.
+
+Verify types and bounds against the deployed contract source. The current
+text limits come from `FeatureExtraction.extract` in [HELLO WORLD COMPUTER's
+verified source](https://repo.sourcify.dev/1/0x6901afceb66564a9b6e7193561fb78f0878b5906).
+The 512-position limit comes from the attention buffers in [OnChainLMv2's
+verified source](https://repo.sourcify.dev/1/0x5f8e7d750e75b44747c058a204d8dea0d18fa5d3).
+Public RPCs may refuse expensive calls even within those limits.
+
+When a custom input can change the result length, set `call.manualReturn`
+to `text`, `svg`, `token-uri`, or `market-state` and use the matching preview.
+After RPC agreement, the custom check validates the ABI offsets, lengths and
+padding once, then decodes the expected output. An empty ABI string is valid
+program text. The example continues to require its exact byte count.
+Never drop the same-block, same-code, same-return-byte RPC agreement check.
 
 ## PR checklist
 

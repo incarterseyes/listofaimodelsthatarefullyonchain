@@ -58,7 +58,13 @@ export function OutputPreview({
   return (
     <>
       <p className="text dim">DECODED OUTPUT · {decoded.heading}</p>
-      {decoded.kind === "image" ? (
+      {decoded.kind === "text" ? (
+        decoded.text === "" ? (
+          <p className="text dim">This program part is empty.</p>
+        ) : (
+          <pre className="preview-text" tabIndex={0} aria-label="Onchain program part">{decoded.text}</pre>
+        )
+      ) : decoded.kind === "image" ? (
         <ImagePreview decoded={decoded} />
       ) : decoded.kind === "figure" ? (
         <>
