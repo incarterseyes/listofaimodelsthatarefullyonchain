@@ -163,7 +163,6 @@ type VerifiedResult =
   | { status: "returned"; bytes: Hex; byteLength: number }
   | { status: "empty" }
   | { status: "mismatch"; actualBytes: number; expectedBytes: number }
-  | { status: "invalid-output"; bytes: Hex; expectedShape: ReturnShape }
   | { status: "no-code" }
   | { status: "reverted"; reason: string };
 
@@ -175,8 +174,14 @@ type ReturnedResult = Extract<VerifiedResult, { status: "returned" }> & {
   refusals?: string[];
 };
 
+type InvalidOutputResult = Omit<ReturnedResult, "status"> & {
+  status: "invalid-output";
+  expectedShape: ReturnShape;
+};
+
 export type CallResult =
   | ReturnedResult
+  | InvalidOutputResult
   | Exclude<VerifiedResult, { status: "returned" }>
   | {
       status: "unconfirmed";
@@ -260,15 +265,7 @@ async function verifyEndpoint(
   }
 
   const byteLength = (data.length - 2) / 2;
-  if (entry.call.returnShape) {
-    if (!decodePreview({ kind: entry.call.returnShape }, data)) {
-      return {
-        blockHash,
-        code,
-        result: { status: "invalid-output", bytes: data, expectedShape: entry.call.returnShape },
-      };
-    }
-  } else if (byteLength !== entry.call.expectedReturnBytes) {
+  if (entry.call.expectedReturnBytes !== undefined && byteLength !== entry.call.expectedReturnBytes) {
     return {
       blockHash,
       code,
@@ -292,8 +289,6 @@ function outcomeKey(result: VerifiedResult): string {
       return `returned:${result.bytes.toLowerCase()}`;
     case "mismatch":
       return `mismatch:${result.actualBytes}:${result.expectedBytes}`;
-    case "invalid-output":
-      return `invalid-output:${result.bytes.toLowerCase()}`;
     case "reverted":
       return "reverted";
     default:
@@ -314,8 +309,6 @@ function summarizeOutcome(result: VerifiedResult): string {
       return "returned no bytes";
     case "mismatch":
       return `returned ${result.actualBytes} bytes; expected ${result.expectedBytes}`;
-    case "invalid-output":
-      return `returned bytes that do not match the expected ${result.expectedShape} output`;
     case "no-code":
       return "reported no contract code";
     case "reverted":
@@ -444,12 +437,18 @@ export async function performCall(entry: PreparedCallTarget): Promise<CallResult
   }
 
   if (agreedResult.status === "returned") {
-    return {
+    const returned: ReturnedResult = {
       ...agreedResult,
       blockNumber: blockTag,
       providers: quorum.length,
       ...(refusals.length > 0 ? { refusals } : {}),
     };
+    // The entire payload already agrees across providers. Validate its shape
+    // once, after both the agreement and quorum checks have passed.
+    if (entry.call.returnShape && !decodePreview({ kind: entry.call.returnShape }, returned.bytes)) {
+      return { ...returned, status: "invalid-output", expectedShape: entry.call.returnShape };
+    }
+    return returned;
   }
   return agreedResult;
 }
@@ -488,6 +487,11 @@ export function describeResult(result: CallResult): CallDescription {
       return {
         ok: false,
         message: "failed: the returned bytes do not match this model's expected output format.",
+        details: [
+          `Expected output format: ${result.expectedShape}.`,
+          `${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} on ${result.byteLength} returned bytes.`,
+          ...(result.refusals ?? []),
+        ],
       };
     case "no-code":
       return {

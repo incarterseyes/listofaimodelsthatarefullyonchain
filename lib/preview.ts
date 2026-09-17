@@ -1,9 +1,9 @@
 import type { OutputPreview } from "./types";
-import { decodeMarketState, decodeStringReturn } from "./abiReturn";
+import { decodeMarketState, decodeStringReturn, hexToBytes, wordAt } from "./abiReturn";
 
 // Decodes verified return bytes according to an entry's declared preview.
-// Runs in the browser after a successful check; every decoder returns null
-// instead of throwing when the bytes do not match the declared shape.
+// Used once after RPC agreement for custom output validation, and again to
+// render previews. Malformed output returns null instead of throwing.
 
 export type DecodedPreview =
   | { kind: "text"; heading: string; text: string }
@@ -28,25 +28,6 @@ export type DecodedPreview =
       src: string;
       caption?: string;
     };
-
-const HEX_BYTES = /^0x(?:[0-9a-fA-F]{2})*$/;
-
-function hexToBytes(hex: string): Uint8Array | null {
-  if (!HEX_BYTES.test(hex)) return null;
-  const bytes = new Uint8Array((hex.length - 2) / 2);
-  for (let i = 0; i < bytes.length; i += 1) {
-    bytes[i] = Number.parseInt(hex.slice(2 + i * 2, 4 + i * 2), 16);
-  }
-  return bytes;
-}
-
-function wordAt(bytes: Uint8Array, index: number): bigint {
-  let value = 0n;
-  for (let i = index * 32; i < index * 32 + 32; i += 1) {
-    value = (value << 8n) | BigInt(bytes[i]);
-  }
-  return value;
-}
 
 function wordHex(bytes: Uint8Array, index: number): string {
   return `0x${Array.from(bytes.slice(index * 32, index * 32 + 32), (byte) =>
@@ -92,7 +73,7 @@ export function decodePreview(
     case "fields": {
       if (bytes.length !== preview.fields.length * 32) return null;
       const rows = preview.fields.map(({ label, type }, index): [string, string] => {
-        const raw = wordAt(bytes, index);
+        const raw = wordAt(bytes, index * 32);
         const value = type === "int256" ? BigInt.asIntN(256, raw) : raw;
         const text =
           type === "bool"
@@ -116,13 +97,13 @@ export function decodePreview(
       // ABI dynamic array of signed integers: offset word, length word,
       // then one 32-byte word per logit.
       if (bytes.length < 96 || bytes.length % 32 !== 0) return null;
-      const count = wordAt(bytes, 1);
+      const count = wordAt(bytes, 32);
       if (count > 1_000_000n || bytes.length !== 64 + Number(count) * 32) {
         return null;
       }
       const logits = Array.from({ length: Number(count) }, (_, index) => ({
         token: index,
-        value: BigInt.asIntN(256, wordAt(bytes, 2 + index)),
+        value: BigInt.asIntN(256, wordAt(bytes, (2 + index) * 32)),
       }));
       logits.sort((a, b) => (b.value > a.value ? 1 : b.value < a.value ? -1 : 0));
       return {
@@ -150,7 +131,7 @@ export function decodePreview(
     }
 
     case "svg": {
-      const svg = decodeStringReturn(hex);
+      const svg = decodeStringReturn(bytes);
       if (!svg || !svg.trimStart().startsWith("<svg")) return null;
       // Rendered via <img>, where browsers do not execute scripts or load
       // external resources referenced by the SVG.
@@ -162,7 +143,7 @@ export function decodePreview(
     }
 
     case "token-uri": {
-      const uri = decodeStringReturn(hex);
+      const uri = decodeStringReturn(bytes);
       const prefix = "data:application/json;base64,";
       if (!uri || !uri.startsWith(prefix)) return null;
       let metadata: unknown;
@@ -187,11 +168,11 @@ export function decodePreview(
       };
     }
     case "text": {
-      const text = decodeStringReturn(hex);
-      return text ? { kind: "text", heading: "ONCHAIN PROGRAM PART", text } : null;
+      const text = decodeStringReturn(bytes);
+      return text === null ? null : { kind: "text", heading: "ONCHAIN PROGRAM PART", text };
     }
     case "market-state": {
-      const state = decodeMarketState(hex);
+      const state = decodeMarketState(bytes);
       if (!state) return null;
       return {
         kind: "rows",

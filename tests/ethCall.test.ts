@@ -496,28 +496,41 @@ const dynamicTarget: PreparedCallTarget = {
   call: { calldata: "0x1234", note: "custom input", returnShape: "svg" },
 };
 
-function svgResult(value: string): string {
+function stringResult(value: string): string {
   const bytes = Buffer.from(value);
   return "0x" + (32).toString(16).padStart(64, "0") + bytes.length.toString(16).padStart(64, "0")
     + bytes.toString("hex").padEnd(Math.ceil(bytes.length / 32) * 64, "0");
 }
 
 test("custom calls accept variable result sizes only when the output format and RPC bytes agree", async (context) => {
-  let output = svgResult("<svg/>");
+  let output = stringResult("<svg/>");
   context.mock.method(globalThis, "fetch", async (_input: RequestInfo | URL, init?: RequestInit) => successFor(requestMethod(init), output));
   assert.equal((await performCall(dynamicTarget)).status, "returned");
-  output = svgResult('<svg xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20"/></svg>');
+  output = stringResult('<svg xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20"/></svg>');
   const result = await performCall(dynamicTarget);
   assert.equal(result.status, "returned");
   if (result.status === "returned") {
     assert.equal(result.byteLength, (output.length - 2) / 2);
     assert.equal(result.providers, endpointUrls.length);
   }
-  output = svgResult("not an SVG");
+  output = stringResult("not an SVG");
   const invalid = await performCall(dynamicTarget);
   assert.equal(invalid.status, "invalid-output");
-  assert.equal(describeResult(invalid).ok, false);
-  output = svgResult("<svg/>").slice(0, -2);
+  assert.deepEqual(invalid, {
+    status: "invalid-output",
+    bytes: output,
+    byteLength: 96,
+    expectedShape: "svg",
+    blockNumber: BLOCK_NUMBER,
+    providers: endpointUrls.length,
+  });
+  const description = describeResult(invalid);
+  assert.equal(description.ok, false);
+  assert.deepEqual(description.details, [
+    "Expected output format: svg.",
+    `${endpointUrls.length} public Ethereum servers agreed at block 256 on 96 returned bytes.`,
+  ]);
+  output = stringResult("<svg/>").slice(0, -2);
   assert.equal((await performCall(dynamicTarget)).status, "invalid-output");
 });
 
@@ -526,9 +539,48 @@ test("custom output formats never bypass byte agreement or the two-provider requ
   context.mock.method(globalThis, "fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
     const first = String(input) === endpointUrls[0];
     if (single && !first) return new Response("down", { status: 500 });
-    return successFor(requestMethod(init), svgResult(first ? "<svg/>" : "<svg />"));
+    return successFor(requestMethod(init), stringResult(first ? "<svg/>" : "<svg />"));
   });
   assert.equal((await performCall(dynamicTarget)).status, "disagreement");
   single = true;
   assert.equal((await performCall(dynamicTarget)).status, "unconfirmed");
+});
+
+test("custom output is decoded once after agreement, and never for disagreement or a lone provider", async (context) => {
+  const metadata = JSON.stringify({ image: "data:image/gif;base64,R0lGODlh" });
+  const uri = "data:application/json;base64," + Buffer.from(metadata).toString("base64");
+  const output = stringResult(uri);
+  const originalAtob = globalThis.atob;
+  const decode = context.mock.method(globalThis, "atob", originalAtob);
+  let mode: "agreed" | "different" | "single" = "agreed";
+  context.mock.method(globalThis, "fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
+    const first = String(input) === endpointUrls[0];
+    if (mode === "single" && !first) return new Response("down", { status: 500 });
+    return successFor(requestMethod(init), mode === "different" && !first ? stringResult("unexpected") : output);
+  });
+  const entry: PreparedCallTarget = {
+    ...target,
+    call: { calldata: target.call.calldata, note: "custom input", returnShape: "token-uri" },
+  };
+  assert.equal((await performCall(entry)).status, "returned");
+  assert.equal(decode.mock.callCount(), 1);
+  decode.mock.resetCalls();
+  mode = "different";
+  assert.equal((await performCall(entry)).status, "disagreement");
+  assert.equal(decode.mock.callCount(), 0);
+  mode = "single";
+  assert.equal((await performCall(entry)).status, "unconfirmed");
+  assert.equal(decode.mock.callCount(), 0);
+});
+
+test("agreed empty program text passes output validation", async (context) => {
+  const output = stringResult("");
+  context.mock.method(globalThis, "fetch", async (_input: RequestInfo | URL, init?: RequestInit) => successFor(requestMethod(init), output));
+  const entry: PreparedCallTarget = {
+    ...target,
+    call: { calldata: target.call.calldata, note: "custom input", returnShape: "text" },
+  };
+  const result = await performCall(entry);
+  assert.equal(result.status, "returned");
+  assert.equal(result.status === "returned" ? result.byteLength : 0, 64);
 });

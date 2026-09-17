@@ -21,7 +21,7 @@ export type ReturnShape = "text" | "svg" | "token-uri" | "market-state";
 type InputDetails = { label: string; example: string; hint: string };
 export type CallInput = InputDetails & (
   | { kind: "uint"; word: number; max: string; allowHex?: boolean }
-  | { kind: "text"; maxBytes: number; maxWords: number }
+  | { kind: "text"; maxBytes: number; maxWords: number; pattern: string; patternMessage: string }
   | { kind: "uint-array"; maxValue: number; maxItems: number }
 );
 

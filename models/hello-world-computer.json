@@ -23,7 +23,9 @@
       "example": "hello world",
       "hint": "Use lowercase letters a–z and spaces only. Limit: 8 words and 64 bytes (64 characters with this alphabet).",
       "maxBytes": 64,
-      "maxWords": 8
+      "maxWords": 8,
+      "pattern": "^(?=.*[a-z])[a-z ]+$",
+      "patternMessage": "Use lowercase letters a–z and spaces only."
     }
   },
   "preview": {

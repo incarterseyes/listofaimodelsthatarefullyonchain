@@ -38,7 +38,8 @@ pointers are not onchain storage. Full contributor rules: CONTRIBUTING.md.
 - `lib/callInput.ts` — validate and encode visitor inputs declared by
   `call.input`, keeping the registered contract and function fixed.
   `call.manualReturn` selects a variable-length output format for custom
-  calls; `lib/abiReturn.ts` validates ABI offsets, lengths, and padding.
+  calls; `lib/abiReturn.ts` shares the byte/word decoders and validates ABI
+  offsets, lengths, and padding. Custom output is validated after RPC agreement.
   Examples and CI retain the exact `expectedReturnBytes` check. Both paths
   require byte-for-byte RPC agreement.
 - `app/` + `components/` — Next.js App Router, `output: "export"`, no server.

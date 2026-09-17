@@ -10,8 +10,8 @@ function model(slug: string) {
   return structuredClone(entry);
 }
 
-test("all nine editable examples reproduce the original calldata and exact-size check", () => {
-  assert.equal(entries.filter((entry) => entry.call.input).length, 9);
+test("all editable examples reproduce the original calldata and exact-size check", () => {
+  assert.ok(entries.some((entry) => entry.call.input));
   for (const entry of entries) {
     const prepared = prepareCall(entry, entry.call.input?.example ?? "");
     assert.equal(prepared.call.calldata, entry.call.calldata, entry.slug);
@@ -88,6 +88,25 @@ test("vocabulary input encodes a uint16 array and rejects malformed or out-of-bo
   assert.throws(() => prepareCall(entry, "2048"), /from 0 to 2047/);
   assert.doesNotThrow(() => prepareCall(entry, Array(512).fill("1").join(" ")));
   assert.throws(() => prepareCall(entry, Array(513).fill("1").join(" ")), /512 token IDs/);
+});
+
+test("text alphabets and limits can change through entry data, including Unicode", () => {
+  const entry = model("hello-world-computer");
+  if (entry.call.input?.kind !== "text") throw new Error("expected text");
+  entry.call.input.pattern = "^[\\p{L}!?\\s]+$";
+  entry.call.input.patternMessage = "Use letters, spaces, or ! and ?.";
+  entry.call.input.maxBytes = 256;
+  entry.call.input.maxWords = 20;
+  assert.doesNotThrow(() => parseModelEntry(entry, `${entry.slug}.json`));
+  const call = prepareCall(entry, "CAFÉ!").call;
+  assert.equal(BigInt("0x" + call.calldata.slice(74, 138)), 6n);
+  assert.equal(call.calldata.slice(138, 150), "434146c38921");
+  assert.doesNotThrow(() => prepareCall(entry, "a".repeat(100)));
+  assert.throws(() => prepareCall(entry, "123"), /Use letters, spaces/);
+  entry.call.input.maxBytes = 5;
+  assert.throws(() => prepareCall(entry, "CAFÉ!"), /5 bytes/);
+  entry.call.input.pattern = "[";
+  assert.throws(() => parseModelEntry(entry, `${entry.slug}.json`), /invalid input example/);
 });
 
 test("registry validation rejects input examples or output formats that drift from the registered call", () => {

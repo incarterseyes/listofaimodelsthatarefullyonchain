@@ -16,8 +16,9 @@ evidence of a reproducible onchain execution path; it is not, on its own, proof
 that arbitrary bytes implement the architecture described by an entry. The
 linked source and project evidence still require human review.
 
-Visitors can enter their own input in each supported entry, then select **Run
-check**. **Use example** fills in the registered example without running it.
+Each supported entry starts with its registered example, ready for a one-click
+check. Visitors can edit the input, then select **Run check**. **Use example**
+restores the registered example without running it.
 Inputs are checked before any request goes to Ethereum. Changing an input
 clears the previous result.
 
@@ -40,8 +41,10 @@ public RPC execution limits.
 
 Automated verification keeps the registered example and its exact return
 size. Custom calls that can return different lengths validate their ABI
-format and decoded output instead. Both paths still require at least two
-RPCs to agree on the block, contract code, and complete return bytes.
+format and decoded output once after RPC agreement. Both paths still require
+at least two RPCs to agree on the block, contract code, and complete return bytes.
+Unexpected output includes the expected format and the raw returned bytes
+for inspection.
 
 ## What qualifies
 

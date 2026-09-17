@@ -141,8 +141,11 @@ drift between the form and the CI call.
 - `uint`: `word` is the zero-based argument word to replace; `max` is a decimal
   string. IDs use decimal digits. Set `allowHex: true` for seeds that also accept
   `0x` hexadecimal. Other argument words, the selector, and the address stay fixed.
-- `text`: replaces the single string argument. `maxBytes` and `maxWords`
-  enforce HELLO WORLD COMPUTER's lowercase-letter-and-space format.
+- `text`: replaces the single string argument. `pattern` is a JavaScript
+  regular expression with the Unicode flag; use `^` and `$` to match the whole
+  input. `patternMessage` explains the allowed text to the visitor. `maxBytes`
+  bounds its UTF-8 size, and `maxWords` counts words separated by whitespace.
+  HELLO WORLD COMPUTER declares its lowercase-letter-and-space rule in its entry.
 - `uint-array`: replaces the single `uint16[]` argument. `maxValue` and
   `maxItems` bound vocabulary IDs and sequence length.
 
@@ -155,8 +158,9 @@ Public RPCs may refuse expensive calls even within those limits.
 
 When a custom input can change the result length, set `call.manualReturn`
 to `text`, `svg`, `token-uri`, or `market-state` and use the matching preview.
-The custom check validates the ABI offsets, lengths and padding, then decodes
-the expected output. The example continues to require its exact byte count.
+After RPC agreement, the custom check validates the ABI offsets, lengths and
+padding once, then decodes the expected output. An empty ABI string is valid
+program text. The example continues to require its exact byte count.
 Never drop the same-block, same-code, same-return-byte RPC agreement check.
 
 ## PR checklist

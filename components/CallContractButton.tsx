@@ -16,7 +16,7 @@ type UiState =
 export function CallContractButton({ target }: { target: CallTarget }) {
   const [state, setState] = useState<UiState>({ phase: "idle" });
   const [expanded, setExpanded] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(target.call.input?.example ?? "");
   const [inputError, setInputError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const input = target.call.input;
@@ -60,7 +60,7 @@ export function CallContractButton({ target }: { target: CallTarget }) {
   let line: React.ReactNode =
     "The check reads the contract code and runs the call on public Ethereum servers.";
   let className = "text out";
-  let returnedResult: Extract<CallResult, { status: "returned" }> | null = null;
+  let rawResult: Extract<CallResult, { status: "returned" | "invalid-output" }> | null = null;
   let observations: string[] | null = null;
 
   if (state.phase === "calling") {
@@ -71,8 +71,8 @@ export function CallContractButton({ target }: { target: CallTarget }) {
     className = described.ok ? "text out out-returned" : "text out out-fail";
     line = described.message;
     observations = described.details ?? null;
-    if (result.status === "returned") {
-      returnedResult = result;
+    if (result.status === "returned" || result.status === "invalid-output") {
+      rawResult = result;
     }
   }
 
@@ -123,19 +123,19 @@ export function CallContractButton({ target }: { target: CallTarget }) {
       >
         {line}
       </p>
-      {returnedResult && (() => {
-        const isLong = returnedResult.bytes.length > TRUNCATE_AT;
+      {rawResult && (() => {
+        const isLong = rawResult.bytes.length > TRUNCATE_AT;
         const visibleBytes =
           expanded || !isLong
-            ? returnedResult.bytes
-            : `${returnedResult.bytes.slice(0, TRUNCATE_AT)}…`;
+            ? rawResult.bytes
+            : `${rawResult.bytes.slice(0, TRUNCATE_AT)}…`;
         const hiddenBytes = Math.max(
           0,
-          (returnedResult.bytes.length - TRUNCATE_AT) / 2,
+          (rawResult.bytes.length - TRUNCATE_AT) / 2,
         );
 
         return (
-          <p className="text out raw-result">
+          <p className={rawResult.status === "returned" ? "text out raw-result" : "text out"}>
             <span className="sr-only">Raw return bytes: </span>
             <span id={bytesId}>{visibleBytes}</span>
             {isLong && (
@@ -149,7 +149,7 @@ export function CallContractButton({ target }: { target: CallTarget }) {
                   aria-label={
                     expanded
                       ? "Collapse returned bytes"
-                      : `Show all ${returnedResult.byteLength} returned bytes`
+                      : `Show all ${rawResult.byteLength} returned bytes`
                   }
                   onClick={() => setExpanded((current) => !current)}
                 >
@@ -160,8 +160,8 @@ export function CallContractButton({ target }: { target: CallTarget }) {
           </p>
         );
       })()}
-      {returnedResult && target.preview && (
-        <OutputPreview spec={target.preview} bytes={returnedResult.bytes} />
+      {rawResult?.status === "returned" && target.preview && (
+        <OutputPreview spec={target.preview} bytes={rawResult.bytes} />
       )}
       {observations && (
         <ul className="text dim rpc-observations">

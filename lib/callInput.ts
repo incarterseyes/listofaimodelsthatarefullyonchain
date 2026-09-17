@@ -30,14 +30,15 @@ function encodeInput(calldata: `0x${string}`, input: CallInput, raw: string): `0
     return `${calldata.slice(0, start)}${word(value)}${calldata.slice(start + 64)}` as `0x${string}`;
   }
   if (input.kind === "text") {
-    // Preserve exactly what the visitor typed. These constraints match
-    // Hello World Computer's FeatureExtraction.extract contract function.
-    if (!/[a-z]/.test(raw) || !/^[a-z ]+$/.test(raw)) {
-      throw new Error("Use lowercase letters a–z and spaces only.");
+    // Preserve exactly what the visitor typed; each entry defines its own
+    // alphabet and error message. Patterns are checked at registry load time.
+    if (!new RegExp(input.pattern, "u").test(raw)) {
+      throw new Error(input.patternMessage);
     }
     const bytes = new TextEncoder().encode(raw);
     if (bytes.length > input.maxBytes) throw new Error(`Use at most ${input.maxBytes} bytes of text.`);
-    if (raw.trim().split(/ +/).length > input.maxWords) throw new Error(`Use at most ${input.maxWords} words.`);
+    const wordCount = raw.trim() ? raw.trim().split(/\s+/u).length : 0;
+    if (wordCount > input.maxWords) throw new Error(`Use at most ${input.maxWords} words.`);
     const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
     return `${selector}${word(32n)}${word(BigInt(bytes.length))}${hex.padEnd(Math.ceil(bytes.length / 32) * 64, "0")}` as `0x${string}`;
   }
