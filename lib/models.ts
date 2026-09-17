@@ -3,6 +3,7 @@ import path from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "@/schema/model.schema.json";
 import type { ModelEntry } from "./types";
+import { prepareCall } from "./callInput";
 
 const ajv = new Ajv2020({ allErrors: true });
 const matchesSchema = ajv.compile(schema);
@@ -96,6 +97,22 @@ function semanticProblems(
   }
 
   const preview = entry.preview;
+  const input = entry.call.input;
+  if (input) {
+    if (input.kind === "uint" && BigInt(input.max) >= 1n << 256n) {
+      problems.push("input max must fit in uint256");
+    }
+    try {
+      if (prepareCall(entry, input.example).call.calldata.toLowerCase() !== entry.call.calldata.toLowerCase()) {
+        problems.push("input example must encode to the registered calldata");
+      }
+    } catch (error) {
+      problems.push(`invalid input example: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  if (entry.call.manualReturn && (!input || preview?.kind !== entry.call.manualReturn)) {
+    problems.push("manualReturn requires an input and a matching preview kind");
+  }
   if (preview) {
     const expected = entry.call.expectedReturnBytes;
     if (preview.kind === "grayscale-image") {

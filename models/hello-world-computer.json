@@ -16,7 +16,15 @@
   "call": {
     "calldata": "0x189bf94f0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b68656c6c6f20776f726c64000000000000000000000000000000000000000000",
     "expectedReturnBytes": 64,
-    "note": "ask(\"hello world\") — runs the model on the text and returns (label uint8, confidence int256)"
+    "note": "ask(text) — runs the model on your text and returns a label and confidence value.",
+    "input": {
+      "kind": "text",
+      "label": "TEXT",
+      "example": "hello world",
+      "hint": "Use lowercase letters a–z and spaces only. Limit: 8 words and 64 bytes (64 characters with this alphabet).",
+      "maxBytes": 64,
+      "maxWords": 8
+    }
   },
   "preview": {
     "kind": "fields",

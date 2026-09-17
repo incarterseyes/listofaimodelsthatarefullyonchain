@@ -55,7 +55,9 @@
           "maximum": 10000000,
           "description": "Exact byte length of the raw JSON-RPC result, including ABI framing."
         },
-        "note": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S", "description": "What the call computes, e.g. \"isYingYang() — runs the model\"." }
+        "note": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S", "description": "What the call computes, e.g. \"isYingYang() — runs the model\"." },
+        "input": { "$ref": "#/$defs/callInput" },
+        "manualReturn": { "enum": ["text", "svg", "token-uri", "market-state"], "description": "Output format checked for custom inputs whose return length can vary. The example retains its exact byte-size check." }
       }
     },
     "links": {
@@ -77,6 +79,16 @@
     "preview": {
       "description": "Optional declarative decoder for the call's return bytes, rendered as a human-readable preview after a successful live check.",
       "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["text", "market-state"] },
+            "note": { "$ref": "#/$defs/previewNote" }
+          },
+          "description": "An ABI string containing program text, or the (uint256, string, uint256, string) tuple returned by stateAt."
+        },
         {
           "type": "object",
           "required": ["kind", "width", "height"],
@@ -158,6 +170,44 @@
     }
   },
   "$defs": {
+    "callInput": {
+      "type": "object",
+      "required": ["kind", "label", "example", "hint"],
+      "properties": {
+        "kind": { "enum": ["uint", "text", "uint-array"] },
+        "label": { "type": "string", "minLength": 1, "maxLength": 40, "pattern": "\\S" },
+        "example": { "type": "string", "minLength": 1, "maxLength": 10000 },
+        "hint": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "\\S" }
+      },
+      "oneOf": [
+        {
+          "required": ["word", "max"],
+          "properties": {
+            "kind": { "const": "uint" },
+            "word": { "type": "integer", "minimum": 0, "maximum": 10 },
+            "max": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,77})$" },
+            "allowHex": { "type": "boolean" }
+          }
+        },
+        {
+          "required": ["maxBytes", "maxWords"],
+          "properties": {
+            "kind": { "const": "text" },
+            "maxBytes": { "type": "integer", "minimum": 1, "maximum": 64 },
+            "maxWords": { "type": "integer", "minimum": 1, "maximum": 8 }
+          }
+        },
+        {
+          "required": ["maxValue", "maxItems"],
+          "properties": {
+            "kind": { "const": "uint-array" },
+            "maxValue": { "type": "integer", "minimum": 0, "maximum": 65535 },
+            "maxItems": { "type": "integer", "minimum": 1, "maximum": 512 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
     "previewNote": {
       "type": "string",
       "minLength": 1,

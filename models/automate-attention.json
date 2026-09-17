@@ -15,7 +15,15 @@
   "call": {
     "calldata": "0xdf6ef8a2000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
     "expectedReturnBytes": 65600,
-    "note": "logits([1]) — runs the model once and returns int16 scores (logits) for all 2048 vocabulary tokens"
+    "note": "logits(tokens) — runs the model on your token IDs and returns scores for all 2048 vocabulary tokens.",
+    "input": {
+      "kind": "uint-array",
+      "label": "VOCABULARY TOKEN IDS",
+      "example": "1",
+      "hint": "Enter IDs from 0 to 2047, separated by spaces or commas. Limit: 512 IDs. Long inputs may exceed public server limits.",
+      "maxValue": 2047,
+      "maxItems": 512
+    }
   },
   "preview": {
     "kind": "logits",

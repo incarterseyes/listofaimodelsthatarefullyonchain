@@ -1,10 +1,12 @@
 import type { OutputPreview } from "./types";
+import { decodeMarketState, decodeStringReturn } from "./abiReturn";
 
 // Decodes verified return bytes according to an entry's declared preview.
 // Runs in the browser after a successful check; every decoder returns null
 // instead of throwing when the bytes do not match the declared shape.
 
 export type DecodedPreview =
+  | { kind: "text"; heading: string; text: string }
   | {
       kind: "image";
       heading: string;
@@ -50,21 +52,6 @@ function wordHex(bytes: Uint8Array, index: number): string {
   return `0x${Array.from(bytes.slice(index * 32, index * 32 + 32), (byte) =>
     byte.toString(16).padStart(2, "0"),
   ).join("")}`;
-}
-
-// Decodes a single ABI-encoded dynamic string return value.
-function abiString(bytes: Uint8Array): string | null {
-  if (bytes.length < 64) return null;
-  if (wordAt(bytes, 0) !== 32n) return null;
-  const length = wordAt(bytes, 1);
-  if (length > 10_000_000n || bytes.length < 64 + Number(length)) return null;
-  try {
-    return new TextDecoder("utf-8", { fatal: true }).decode(
-      bytes.slice(64, 64 + Number(length)),
-    );
-  } catch {
-    return null;
-  }
 }
 
 function base64Encode(text: string): string {
@@ -163,7 +150,7 @@ export function decodePreview(
     }
 
     case "svg": {
-      const svg = abiString(bytes);
+      const svg = decodeStringReturn(hex);
       if (!svg || !svg.trimStart().startsWith("<svg")) return null;
       // Rendered via <img>, where browsers do not execute scripts or load
       // external resources referenced by the SVG.
@@ -175,7 +162,7 @@ export function decodePreview(
     }
 
     case "token-uri": {
-      const uri = abiString(bytes);
+      const uri = decodeStringReturn(hex);
       const prefix = "data:application/json;base64,";
       if (!uri || !uri.startsWith(prefix)) return null;
       let metadata: unknown;
@@ -197,6 +184,25 @@ export function decodePreview(
         heading: "ONCHAIN TOKEN METADATA",
         src: image,
         caption: typeof record.name === "string" ? record.name : undefined,
+      };
+    }
+    case "text": {
+      const text = decodeStringReturn(hex);
+      return text ? { kind: "text", heading: "ONCHAIN PROGRAM PART", text } : null;
+    }
+    case "market-state": {
+      const state = decodeMarketState(hex);
+      if (!state) return null;
+      return {
+        kind: "rows",
+        heading: "SAVED MODEL STATE",
+        header: ["FIELD", "VALUE"],
+        rows: [
+          ["INPUT BLOCK", state.inputBlock],
+          ["INPUTS", state.inputs || "No saved inputs"],
+          ["MOOD BLOCK", state.moodBlock],
+          ["MOOD", state.mood || "No saved mood"],
+        ],
       };
     }
   }

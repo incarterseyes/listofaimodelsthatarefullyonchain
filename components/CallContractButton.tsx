@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { describeResult, type CallResult } from "@/lib/ethCall";
+import { prepareCall } from "@/lib/callInput";
 import type { CallTarget } from "@/lib/types";
 import { OutputPreview } from "./OutputPreview";
 
@@ -15,15 +16,36 @@ type UiState =
 export function CallContractButton({ target }: { target: CallTarget }) {
   const [state, setState] = useState<UiState>({ phase: "idle" });
   const [expanded, setExpanded] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [inputError, setInputError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const input = target.call.input;
   const outputId = `${target.slug}-call-output`;
   const bytesId = `${outputId}-bytes`;
+  const inputId = `${target.slug}-input`;
+
+  function updateInput(value: string) {
+    setInputValue(value);
+    setInputError(null);
+    setState({ phase: "idle" });
+    setExpanded(false);
+  }
 
   async function run() {
+    let prepared;
+    try {
+      prepared = prepareCall(target, inputValue);
+    } catch (error) {
+      setInputError(error instanceof Error ? error.message : String(error));
+      inputRef.current?.focus();
+      return;
+    }
+    setInputError(null);
     setState({ phase: "calling" });
     setExpanded(false);
     try {
       const { performCall } = await import("@/lib/ethCall");
-      setState({ phase: "done", result: await performCall(target) });
+      setState({ phase: "done", result: await performCall(prepared) });
     } catch (error) {
       setState({
         phase: "done",
@@ -55,7 +77,42 @@ export function CallContractButton({ target }: { target: CallTarget }) {
   }
 
   return (
-    <>
+    <form onSubmit={(event) => { event.preventDefault(); void run(); }} noValidate>
+      {input && (
+        <div className="call-input">
+          <label htmlFor={inputId}>{input.label}</label>
+          <input
+            ref={inputRef}
+            id={inputId}
+            name="model-input"
+            type="text"
+            inputMode={input.kind === "uint" && !input.allowHex ? "numeric" : "text"}
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            value={inputValue}
+            placeholder={`e.g. ${input.example}`}
+            disabled={state.phase === "calling"}
+            aria-describedby={`${inputId}-hint${inputError ? ` ${inputId}-error` : ""}`}
+            aria-invalid={Boolean(inputError)}
+            onChange={(event) => updateInput(event.target.value)}
+          />
+          <p className="text dim input-hint" id={`${inputId}-hint`}>{input.hint}</p>
+          {inputError && <p className="text input-error" id={`${inputId}-error`} role="alert">{inputError}</p>}
+        </div>
+      )}
+      <div className="row-between call-actions">
+        <button className="action" type="submit" disabled={state.phase === "calling"} aria-controls={outputId}>
+          <span className="action-marker" aria-hidden="true">↵</span>
+          <span className="action-label">{state.phase === "calling" ? "CHECKING…" : "RUN CHECK"}</span>
+        </button>
+        {input && (
+          <button className="action example-action" type="button" disabled={state.phase === "calling"}
+            onClick={() => { updateInput(input.example); inputRef.current?.focus(); }}>
+            USE EXAMPLE
+          </button>
+        )}
+      </div>
       <p
         className={className}
         id={outputId}
@@ -117,20 +174,6 @@ export function CallContractButton({ target }: { target: CallTarget }) {
       <p className="text dim rpc-notice">
         Requests go from your browser to public third-party Ethereum servers.
       </p>
-      <div className="row-between">
-        <button
-          className="action"
-          type="button"
-          onClick={run}
-          disabled={state.phase === "calling"}
-          aria-controls={outputId}
-        >
-          <span className="action-marker" aria-hidden="true">
-            ↵
-          </span>
-          <span className="action-label">RUN CHECK</span>
-        </button>
-      </div>
-    </>
+    </form>
   );
 }

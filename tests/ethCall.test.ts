@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { describeResult, performCall, RPC_URLS } from "@/lib/ethCall";
-import type { CallTarget } from "@/lib/types";
+import type { CallTarget, PreparedCallTarget } from "@/lib/types";
 
 const target: CallTarget = {
   slug: "test-model",
@@ -448,7 +448,7 @@ test("every outcome maps to stable user-facing copy", () => {
     {
       ok: true,
       message:
-        "passed: 3 public Ethereum servers agreed at block 256 that the contract code exists and the call returns the expected 1 bytes.",
+        "passed: 3 public Ethereum servers agreed at block 256 that the contract code exists and the call returns the same 1 bytes.",
     },
   );
   assert.deepEqual(describeResult({ status: "empty" }), {
@@ -489,4 +489,46 @@ test("every outcome maps to stable user-facing copy", () => {
     ok: false,
     message: "could not complete the check: down",
   });
+});
+
+const dynamicTarget: PreparedCallTarget = {
+  ...target,
+  call: { calldata: "0x1234", note: "custom input", returnShape: "svg" },
+};
+
+function svgResult(value: string): string {
+  const bytes = Buffer.from(value);
+  return "0x" + (32).toString(16).padStart(64, "0") + bytes.length.toString(16).padStart(64, "0")
+    + bytes.toString("hex").padEnd(Math.ceil(bytes.length / 32) * 64, "0");
+}
+
+test("custom calls accept variable result sizes only when the output format and RPC bytes agree", async (context) => {
+  let output = svgResult("<svg/>");
+  context.mock.method(globalThis, "fetch", async (_input: RequestInfo | URL, init?: RequestInit) => successFor(requestMethod(init), output));
+  assert.equal((await performCall(dynamicTarget)).status, "returned");
+  output = svgResult('<svg xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20"/></svg>');
+  const result = await performCall(dynamicTarget);
+  assert.equal(result.status, "returned");
+  if (result.status === "returned") {
+    assert.equal(result.byteLength, (output.length - 2) / 2);
+    assert.equal(result.providers, endpointUrls.length);
+  }
+  output = svgResult("not an SVG");
+  const invalid = await performCall(dynamicTarget);
+  assert.equal(invalid.status, "invalid-output");
+  assert.equal(describeResult(invalid).ok, false);
+  output = svgResult("<svg/>").slice(0, -2);
+  assert.equal((await performCall(dynamicTarget)).status, "invalid-output");
+});
+
+test("custom output formats never bypass byte agreement or the two-provider requirement", async (context) => {
+  let single = false;
+  context.mock.method(globalThis, "fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
+    const first = String(input) === endpointUrls[0];
+    if (single && !first) return new Response("down", { status: 500 });
+    return successFor(requestMethod(init), svgResult(first ? "<svg/>" : "<svg />"));
+  });
+  assert.equal((await performCall(dynamicTarget)).status, "disagreement");
+  single = true;
+  assert.equal((await performCall(dynamicTarget)).status, "unconfirmed");
 });

@@ -15,7 +15,17 @@
   "call": {
     "calldata": "0xb0970a1400000000000000000000000000000000d7f57697969493fa0cbd0e6116fc11b1",
     "expectedReturnBytes": 3328,
-    "note": "fingerprintSvg(<token #1 seed>) — runs the model inside Ethereum; the call is too large for one public Ethereum server, so checks usually pass with 2 of 3 servers"
+    "note": "fingerprintSvg(seed) — runs the model inside Ethereum and returns a 12×8 fingerprint as an SVG image.",
+    "input": {
+      "kind": "uint",
+      "label": "SEED",
+      "example": "0xd7f57697969493fa0cbd0e6116fc11b1",
+      "hint": "Enter a 128-bit seed as a whole number or 0x followed by up to 32 hexadecimal digits.",
+      "word": 0,
+      "max": "340282366920938463463374607431768211455",
+      "allowHex": true
+    },
+    "manualReturn": "svg"
   },
   "preview": {
     "kind": "svg"

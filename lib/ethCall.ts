@@ -1,4 +1,5 @@
-import type { CallTarget } from "./types";
+import type { PreparedCallTarget, ReturnShape } from "./types";
+import { decodePreview } from "./preview";
 
 // Ethereum mainnet endpoints; the quorum below requires >= 2 to agree.
 // Entries that decode an image inside the EVM need more than the 50M gas some
@@ -162,6 +163,7 @@ type VerifiedResult =
   | { status: "returned"; bytes: Hex; byteLength: number }
   | { status: "empty" }
   | { status: "mismatch"; actualBytes: number; expectedBytes: number }
+  | { status: "invalid-output"; bytes: Hex; expectedShape: ReturnShape }
   | { status: "no-code" }
   | { status: "reverted"; reason: string };
 
@@ -203,7 +205,7 @@ async function probeEndpoint(url: string): Promise<bigint> {
 
 async function verifyEndpoint(
   url: string,
-  entry: CallTarget,
+  entry: PreparedCallTarget,
   blockNumber: bigint,
   blockTag: Hex,
 ): Promise<{ blockHash: Hex; code: Hex; result: VerifiedResult }> {
@@ -258,7 +260,15 @@ async function verifyEndpoint(
   }
 
   const byteLength = (data.length - 2) / 2;
-  if (byteLength !== entry.call.expectedReturnBytes) {
+  if (entry.call.returnShape) {
+    if (!decodePreview({ kind: entry.call.returnShape }, data)) {
+      return {
+        blockHash,
+        code,
+        result: { status: "invalid-output", bytes: data, expectedShape: entry.call.returnShape },
+      };
+    }
+  } else if (byteLength !== entry.call.expectedReturnBytes) {
     return {
       blockHash,
       code,
@@ -282,6 +292,8 @@ function outcomeKey(result: VerifiedResult): string {
       return `returned:${result.bytes.toLowerCase()}`;
     case "mismatch":
       return `mismatch:${result.actualBytes}:${result.expectedBytes}`;
+    case "invalid-output":
+      return `invalid-output:${result.bytes.toLowerCase()}`;
     case "reverted":
       return "reverted";
     default:
@@ -296,12 +308,14 @@ function summarizeOutcome(result: VerifiedResult): string {
         result.bytes.length <= 22
           ? result.bytes
           : `${result.bytes.slice(0, 12)}…${result.bytes.slice(-8)}`;
-      return `returned ${result.byteLength} expected bytes (${preview})`;
+      return `returned ${result.byteLength} bytes (${preview})`;
     }
     case "empty":
       return "returned no bytes";
     case "mismatch":
       return `returned ${result.actualBytes} bytes; expected ${result.expectedBytes}`;
+    case "invalid-output":
+      return `returned bytes that do not match the expected ${result.expectedShape} output`;
     case "no-code":
       return "reported no contract code";
     case "reverted":
@@ -333,7 +347,7 @@ function summarizeCheck(check: EndpointCheck, blockTag: Hex): string {
   return `${endpointName(check.url)}: block ${BigInt(blockTag)} (${check.blockHash.slice(0, 12)}…), ${summarizeOutcome(check.result)}`;
 }
 
-export async function performCall(entry: CallTarget): Promise<CallResult> {
+export async function performCall(entry: PreparedCallTarget): Promise<CallResult> {
   const probes = await Promise.all(
     RPC_URLS.map(async (url) => {
       try {
@@ -453,7 +467,7 @@ export function describeResult(result: CallResult): CallDescription {
     case "returned":
       return {
         ok: true,
-        message: `passed: ${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} that the contract code exists and the call returns the expected ${result.byteLength} bytes.`,
+        message: `passed: ${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} that the contract code exists and the call returns the same ${result.byteLength} bytes.`,
         ...(result.refusals
           ? {
               details: [
@@ -469,6 +483,11 @@ export function describeResult(result: CallResult): CallDescription {
       return {
         ok: false,
         message: `failed: the call returned ${result.actualBytes} bytes; the entry expects ${result.expectedBytes}.`,
+      };
+    case "invalid-output":
+      return {
+        ok: false,
+        message: "failed: the returned bytes do not match this model's expected output format.",
       };
     case "no-code":
       return {
