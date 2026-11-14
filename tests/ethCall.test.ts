@@ -448,7 +448,7 @@ test("every outcome maps to stable user-facing copy", () => {
     {
       ok: true,
       message:
-        "passed: 3 public Ethereum servers agreed at block 256 that the contract code exists and the call returns the same 1 bytes.",
+        "passed: 3 public Ethereum servers returned the same contract code and the same 1-byte result at block 256.",
     },
   );
   assert.deepEqual(describeResult({ status: "empty" }), {
@@ -457,7 +457,7 @@ test("every outcome maps to stable user-facing copy", () => {
   });
   assert.deepEqual(
     describeResult({ status: "mismatch", actualBytes: 2, expectedBytes: 1 }),
-    { ok: false, message: "failed: the call returned 2 bytes; the entry expects 1." },
+    { ok: false, message: "failed: the call returned 2 bytes, but the entry expects 1 byte." },
   );
   assert.deepEqual(describeResult({ status: "no-code" }), {
     ok: false,
@@ -465,7 +465,7 @@ test("every outcome maps to stable user-facing copy", () => {
   });
   assert.deepEqual(describeResult({ status: "reverted", reason: "nope" }), {
     ok: false,
-    message: "failed: the contract rejected the call: nope",
+    message: "failed: the contract rejected the call. Reason: nope",
   });
   assert.deepEqual(describeResult({ status: "disagreement", observations }), {
     ok: false,
@@ -481,13 +481,13 @@ test("every outcome maps to stable user-facing copy", () => {
     {
       ok: false,
       message:
-        "not confirmed: fewer than two public Ethereum servers completed the same check.",
+        "not confirmed: only one public Ethereum server completed the call. A live check needs two servers that agree.",
       details: observations,
     },
   );
   assert.deepEqual(describeResult({ status: "unreachable", message: "down" }), {
     ok: false,
-    message: "could not complete the check: down",
+    message: "could not complete the live check: down",
   });
 });
 
@@ -527,8 +527,8 @@ test("custom calls accept variable result sizes only when the output format and 
   const description = describeResult(invalid);
   assert.equal(description.ok, false);
   assert.deepEqual(description.details, [
-    "Expected output format: svg.",
-    `${endpointUrls.length} public Ethereum servers agreed at block 256 on 96 returned bytes.`,
+    "Expected output format: an SVG image.",
+    `${endpointUrls.length} public Ethereum servers returned the same 96 bytes at block 256.`,
   ]);
   output = stringResult("<svg/>").slice(0, -2);
   assert.equal((await performCall(dynamicTarget)).status, "invalid-output");

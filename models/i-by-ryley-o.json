@@ -6,21 +6,21 @@
   "month": 3,
   "address": "0x000000A35301Fa5784E820F489003FfcfFdc69a6",
   "facts": [
-    ["TYPE", "conditional VAE-GAN generator (cVAE-GAN)"],
+    ["TYPE", "image generator (conditional VAE-GAN, cVAE-GAN)"],
     ["SIZE", "297,859 parameters, quantized to uint8"],
-    ["STORAGE", "data contracts — gzip shards in 24 locked contracts, 422,292 bytes total"],
+    ["STORAGE", "data contracts: gzip-compressed parts in 24 locked contracts, 422,292 bytes total"],
     ["OUTPUT", "one 64×64 RGB eye image per token, drawn in the browser"]
   ],
-  "description": "I. draws 64×64 eyes with human expressions. A small cVAE-GAN generates each image. The full program — inference code and compressed weights — lives in 24 data contracts on Ethereum, locked forever. Your browser reads the program from Ethereum and runs it. No server and no outside library is needed.",
+  "description": "I. draws 64×64 pictures of eyes with human expressions. A small image generator, a type of neural network called a cVAE-GAN, makes each picture. Ethereum stores the full program in 24 data contracts that nobody can change. The program includes the code that runs the model and the compressed weights. On the project site, your browser reads the program from Ethereum and runs it. Apart from Ethereum, it needs no server and no outside code library.",
   "call": {
     "calldata": "0x8c3c9cdd00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005",
     "expectedReturnBytes": 9952,
-    "note": "projectScriptByIndex(0, part) — reads one part of the onchain program. Parts 5–18 contain compressed model weights.",
+    "note": "projectScriptByIndex(0, part) reads one part of the onchain program. Parts 5–18 contain the compressed model weights.",
     "input": {
       "kind": "uint",
       "label": "PROGRAM PART",
       "example": "5",
-      "hint": "Choose a part from 0 to 23. This reads program text; it does not draw an eye.",
+      "hint": "Choose a part from 0 to 23. The live check shows program text. It does not draw an eye.",
       "word": 1,
       "max": "23"
     },
@@ -28,7 +28,7 @@
   },
   "preview": {
     "kind": "text",
-    "note": "This is one part of the stored program. The project site runs the full program to draw the artwork."
+    "note": "This is one part of the stored program. On the project site, your browser runs the full program to draw the artwork."
   },
   "links": [
     { "label": "SITE", "url": "https://www.artblocks.io/collection/i.-by-ryley-o.eth" },

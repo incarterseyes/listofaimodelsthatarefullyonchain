@@ -1,5 +1,6 @@
-// Strict decoders for the variable-length results used by manual calls.
-// Offsets, payload lengths, padding and the complete encoded size must agree.
+// Strict decoders for the variable-length results of custom inputs. The
+// offsets, the payload lengths, the padding, and the complete encoded size
+// must all agree.
 const MAX_RETURN_BYTES = 10_000_000;
 
 export function hexToBytes(hex: string): Uint8Array | null {

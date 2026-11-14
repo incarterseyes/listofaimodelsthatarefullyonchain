@@ -9,8 +9,9 @@ async function main() {
     entry: (typeof entries)[number];
     result: Awaited<ReturnType<typeof performCall>>;
   }> = [];
-  // Serialize live checks so many entries do not burst the same public
-  // endpoints and turn rate limits into unrelated CI failures.
+  // Run the live checks one at a time. Many requests at once can reach the
+  // rate limits of the public endpoints. CI then fails for a reason that is
+  // not in an entry.
   for (const [index, entry] of entries.entries()) {
     if (index > 0) {
       await new Promise((resolve) => setTimeout(resolve, INTER_ENTRY_DELAY_MS));
@@ -37,10 +38,10 @@ async function main() {
   }
 
   if (failures > 0) {
-    console.error(`\n${failures} live verification check(s) failed.`);
+    console.error(`\nThe live check failed for ${failures} of ${results.length} entries.`);
     process.exitCode = 1;
   } else {
-    console.log(`\n${results.length} entries passed strict live verification.`);
+    console.log(`\nAll ${results.length} entries passed the live check.`);
   }
 }
 

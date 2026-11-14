@@ -1,9 +1,10 @@
 import type { OutputPreview } from "./types";
 import { decodeMarketState, decodeStringReturn, hexToBytes, wordAt } from "./abiReturn";
 
-// Decodes verified return bytes according to an entry's declared preview.
-// Used once after RPC agreement for custom output validation, and again to
-// render previews. Malformed output returns null instead of throwing.
+// Decodes the returned bytes of a passed live check as the entry's preview
+// declares. The live check uses it once, after the RPC endpoints agree, to
+// validate custom output. The page uses it again to show the preview.
+// Malformed output returns null and does not throw.
 
 export type DecodedPreview =
   | { kind: "text"; heading: string; text: string }
@@ -21,8 +22,8 @@ export type DecodedPreview =
       rows: [string, string][];
     }
   | {
-      // A data: URI rendered via <img>. Never an external URL — previews
-      // must not trigger network requests beyond the verified call itself.
+      // A data: URI shown in an <img>. It is never an external URL, because
+      // a preview must not start a network request other than the live check.
       kind: "figure";
       heading: string;
       src: string;
@@ -52,8 +53,8 @@ export function decodePreview(
   switch (preview.kind) {
     case "grayscale-image": {
       const size = preview.width * preview.height;
-      // Accept a raw pixel buffer, or one wrapped in ABI dynamic-bytes
-      // framing (32-byte offset + 32-byte length before the payload).
+      // Accept a raw pixel buffer, or one in ABI dynamic-bytes framing: a
+      // 32-byte offset and a 32-byte length before the payload.
       const pixels =
         bytes.length === size
           ? bytes
@@ -81,13 +82,13 @@ export function decodePreview(
               ? "true"
               : value === 0n
                 ? "false"
-                : `nonstandard bool (${value})`
+                : `not true or false (${value})`
             : value.toString();
         return [label, text];
       });
       return {
         kind: "rows",
-        heading: "DECODED FIELDS",
+        heading: "FIELDS",
         header: ["FIELD", "VALUE"],
         rows,
       };
@@ -108,8 +109,8 @@ export function decodePreview(
       logits.sort((a, b) => (b.value > a.value ? 1 : b.value < a.value ? -1 : 0));
       return {
         kind: "rows",
-        heading: `TOP ${preview.topK} OF ${count} LOGITS`,
-        header: ["TOKEN", "LOGIT"],
+        heading: `TOP ${preview.topK} OF ${count} TOKEN SCORES`,
+        header: ["TOKEN", "SCORE"],
         rows: logits
           .slice(0, preview.topK)
           .map(({ token, value }) => [`TOKEN ${token}`, value.toString()]),
@@ -133,8 +134,8 @@ export function decodePreview(
     case "svg": {
       const svg = decodeStringReturn(bytes);
       if (!svg || !svg.trimStart().startsWith("<svg")) return null;
-      // Rendered via <img>, where browsers do not execute scripts or load
-      // external resources referenced by the SVG.
+      // Shown in an <img>. There, browsers do not run scripts in the SVG and
+      // do not load external resources that it names.
       return {
         kind: "figure",
         heading: "ONCHAIN SVG",
@@ -155,8 +156,8 @@ export function decodePreview(
       if (!metadata || typeof metadata !== "object") return null;
       const record = metadata as Record<string, unknown>;
       const image = record.image;
-      // Only self-contained data: images qualify; an https image would be
-      // offchain content and must not be fetched or rendered.
+      // Only an image in a data: URI qualifies. An https image is offchain
+      // content, so the page must not fetch it or show it.
       if (typeof image !== "string" || !image.startsWith("data:image/")) {
         return null;
       }

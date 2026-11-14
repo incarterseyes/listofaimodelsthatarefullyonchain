@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/incarterseyes/listofaimodelsthatarefullyonchain/schema/model.schema.json",
-  "title": "Onchain Model Register entry",
-  "description": "One fully-onchain neural network. The model's weights AND its inference/renderer code must live on Ethereum mainnet. The file name must be <slug>.json.",
+  "title": "Onchain Model Registry entry",
+  "description": "One neural network that is stored fully on Ethereum mainnet. Ethereum mainnet must store both the weights and the code that runs the model or draws its output. The file name must be <slug>.json.",
   "type": "object",
   "required": ["slug", "title", "author", "year", "month", "address", "facts", "description", "call", "links"],
   "additionalProperties": false,
@@ -10,16 +10,16 @@
     "slug": {
       "type": "string",
       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
-      "description": "Stable kebab-case identifier; must match the file name."
+      "description": "A stable identifier in kebab-case. It must match the file name."
     },
     "title": { "type": "string", "minLength": 1, "maxLength": 80, "pattern": "\\S" },
     "author": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "\\S" },
-    "year": { "type": "integer", "minimum": 2015, "maximum": 2100, "description": "Year the model was released on mainnet." },
-    "month": { "type": "integer", "minimum": 1, "maximum": 12, "description": "Month the model was released on mainnet (1–12). For shared contracts, use the project's release, not the core contract's deployment." },
+    "year": { "type": "integer", "minimum": 2015, "maximum": 2100, "description": "The year of the model's release on mainnet." },
+    "month": { "type": "integer", "minimum": 1, "maximum": 12, "description": "The month of the model's release on mainnet (1–12). For a shared contract, use the project's release date, not the deployment date of the core contract." },
     "address": {
       "type": "string",
       "pattern": "^0x[0-9a-fA-F]{40}$",
-      "description": "The contract holding the weights (and the inference code, if the model runs inside the EVM)."
+      "description": "The contract that the registered call targets."
     },
     "facts": {
       "type": "array",
@@ -36,7 +36,7 @@
         "maxItems": 2,
         "items": false
       },
-      "description": "LABEL/VALUE pairs rendered as the entry's table: the reader's questions, answered in a fixed order. TYPE, SIZE, STORAGE, OUTPUT are required; TRAINING is the one optional row, between STORAGE and OUTPUT. Full rules in lib/models.ts and CONTRIBUTING.md."
+      "description": "Pairs of a label and a value. The site shows them as the entry's table. They answer the reader's questions in a fixed order. TYPE, SIZE, STORAGE, and OUTPUT are required. TRAINING is optional and goes between STORAGE and OUTPUT. See lib/models.ts and CONTRIBUTING.md for the full rules."
     },
     "description": { "type": "string", "minLength": 1, "maxLength": 700, "pattern": "\\S" },
     "call": {
@@ -47,17 +47,17 @@
         "calldata": {
           "type": "string",
           "pattern": "^0x([0-9a-fA-F]{2})*$",
-          "description": "Pre-encoded calldata for an eth_call against `address` that must return non-empty bytes."
+          "description": "Pre-encoded calldata for an eth_call to `address`. The call must return at least one byte."
         },
         "expectedReturnBytes": {
           "type": "integer",
           "minimum": 1,
           "maximum": 10000000,
-          "description": "Exact byte length of the raw JSON-RPC result, including ABI framing."
+          "description": "The exact length in bytes of the raw JSON-RPC result, including ABI framing."
         },
-        "note": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S", "description": "What the call computes, e.g. \"isYingYang() — runs the model\"." },
+        "note": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S", "description": "What the call computes, for example \"isYingYang() runs the model\"." },
         "input": { "$ref": "#/$defs/callInput" },
-        "manualReturn": { "enum": ["text", "svg", "token-uri", "market-state"], "description": "Output format checked for custom inputs whose return length can vary. The example retains its exact byte-size check." }
+        "manualReturn": { "enum": ["text", "svg", "token-uri", "market-state"], "description": "The output format that the site checks when a custom input can change the result length. The registered example keeps its exact size check." }
       }
     },
     "links": {
@@ -74,10 +74,10 @@
           "url": { "type": "string", "pattern": "^https://[^\\s]+$" }
         }
       },
-      "description": "At most three links, in this order: SITE (the project), ABOUT (a writeup), CONTRACT (required — the entry's address on evm.now). Full rules in lib/models.ts and CONTRIBUTING.md."
+      "description": "At most three links, in this order: SITE (the project), ABOUT (a writeup), and CONTRACT (the entry's address on evm.now). CONTRACT is required. See lib/models.ts and CONTRIBUTING.md for the full rules."
     },
     "preview": {
-      "description": "Optional declarative decoder for the call's return bytes, rendered as a human-readable preview after a successful live check.",
+      "description": "Optional. Declares how to decode the returned bytes. The site shows the decoded result after a live check passes.",
       "oneOf": [
         {
           "type": "object",
@@ -87,7 +87,7 @@
             "kind": { "enum": ["text", "market-state"] },
             "note": { "$ref": "#/$defs/previewNote" }
           },
-          "description": "An ABI string containing program text, or the (uint256, string, uint256, string) tuple returned by stateAt."
+          "description": "An ABI string that contains program text, or the (uint256, string, uint256, string) tuple that stateAt returns."
         },
         {
           "type": "object",
@@ -99,7 +99,7 @@
             "height": { "type": "integer", "minimum": 1, "maximum": 256 },
             "note": { "$ref": "#/$defs/previewNote" }
           },
-          "description": "One byte per pixel, row-major; raw or in ABI dynamic-bytes framing."
+          "description": "One byte for each pixel, row by row. The bytes are raw or in ABI dynamic-bytes framing."
         },
         {
           "type": "object",
@@ -123,7 +123,7 @@
             },
             "note": { "$ref": "#/$defs/previewNote" }
           },
-          "description": "Static ABI return values, one 32-byte word per field, in order."
+          "description": "Static ABI return values in order, one 32-byte word for each field."
         },
         {
           "type": "object",
@@ -134,7 +134,7 @@
             "topK": { "type": "integer", "minimum": 1, "maximum": 10 },
             "note": { "$ref": "#/$defs/previewNote" }
           },
-          "description": "ABI dynamic array of signed logits; shows the topK highest-scoring token indices."
+          "description": "An ABI dynamic array of signed logits, which are the raw scores of the model. The preview shows the topK tokens with the highest scores."
         },
         {
           "type": "object",
@@ -144,7 +144,7 @@
             "kind": { "const": "words" },
             "note": { "$ref": "#/$defs/previewNote" }
           },
-          "description": "Fallback: lists each 32-byte word of the return data."
+          "description": "A fallback that lists each 32-byte word of the returned data."
         },
         {
           "type": "object",
@@ -154,7 +154,7 @@
             "kind": { "const": "svg" },
             "note": { "$ref": "#/$defs/previewNote" }
           },
-          "description": "ABI-encoded string containing an SVG document; rendered as an image."
+          "description": "An ABI-encoded string that contains an SVG document. The site shows it as an image."
         },
         {
           "type": "object",
@@ -164,7 +164,7 @@
             "kind": { "const": "token-uri" },
             "note": { "$ref": "#/$defs/previewNote" }
           },
-          "description": "ABI-encoded string containing base64 ERC-721 JSON metadata with a self-contained data: image; rendered as an image."
+          "description": "An ABI-encoded string that contains base64 ERC-721 JSON metadata. The metadata must hold its image as a data: URI. The site shows that image."
         }
       ]
     }
@@ -195,8 +195,8 @@
             "kind": { "const": "text" },
             "maxBytes": { "type": "integer", "minimum": 1, "maximum": 10000 },
             "maxWords": { "type": "integer", "minimum": 1, "maximum": 10000 },
-            "pattern": { "type": "string", "minLength": 1, "maxLength": 500, "description": "JavaScript regular expression with the Unicode flag. Anchor with ^ and $ to validate the complete input." },
-            "patternMessage": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "\\S", "description": "Plain-language error shown when the input does not match the pattern." }
+            "pattern": { "type": "string", "minLength": 1, "maxLength": 500, "description": "A JavaScript regular expression, used with the Unicode flag. Start it with ^ and end it with $ to match the complete input." },
+            "patternMessage": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "\\S", "description": "The error message that the visitor sees when the input does not match the pattern. Use plain words." }
           }
         },
         {
@@ -215,7 +215,7 @@
       "minLength": 1,
       "maxLength": 200,
       "pattern": "\\S",
-      "description": "Honest caveat rendered under the preview, e.g. what cannot be decoded onchain."
+      "description": "A short note that the site shows under the preview. Use it to say what the preview cannot show."
     }
   }
 }

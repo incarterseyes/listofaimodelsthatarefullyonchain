@@ -49,8 +49,8 @@ export function OutputPreview({
   if (!decoded) {
     return (
       <p className="text dim">
-        The returned bytes did not match the entry&apos;s declared preview
-        shape.
+        The site cannot show a preview. The returned bytes do not match the
+        output format that this entry expects.
       </p>
     );
   }
@@ -68,8 +68,8 @@ export function OutputPreview({
         <ImagePreview decoded={decoded} />
       ) : decoded.kind === "figure" ? (
         <>
-          {/* src is always a data: URI decoded from the verified bytes;
-              browsers do not run scripts inside <img> content. */}
+          {/* src is always a data: URI decoded from the returned bytes.
+              Browsers do not run scripts inside <img> content. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className="preview-image"

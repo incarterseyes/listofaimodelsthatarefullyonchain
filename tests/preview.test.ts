@@ -42,7 +42,7 @@ test("fields decode bools and signed integers", () => {
 
   assert.deepEqual(decoded, {
     kind: "rows",
-    heading: "DECODED FIELDS",
+    heading: "FIELDS",
     header: ["FIELD", "VALUE"],
     rows: [
       ["LABEL", "1"],
@@ -70,8 +70,8 @@ test("logits surface the top-k tokens in score order", () => {
 
   assert.deepEqual(decoded, {
     kind: "rows",
-    heading: "TOP 3 OF 5 LOGITS",
-    header: ["TOKEN", "LOGIT"],
+    heading: "TOP 3 OF 5 TOKEN SCORES",
+    header: ["TOKEN", "SCORE"],
     rows: [
       ["TOKEN 1", "7"],
       ["TOKEN 3", "7"],

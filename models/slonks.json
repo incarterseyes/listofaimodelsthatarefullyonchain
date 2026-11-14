@@ -6,17 +6,17 @@
   "month": 5,
   "address": "0xCa116243a2013ED33015c776ee37310b199Ee80c",
   "facts": [
-    ["TYPE", "candidate-palette classifier — per-pixel 18-way argmax over learned embeddings"],
-    ["SIZE", "203,680 learned int8 values (10,000×10 embeddings + 576×18×10 pixel heads)"],
-    ["STORAGE", "data contracts (SSTORE2) — 214,048 int8 bytes in 9 locked contracts"],
+    ["TYPE", "color classifier: picks the best of 18 candidate colors for each pixel (argmax over learned embeddings)"],
+    ["SIZE", "203,680 learned int8 values (10,000×10 embeddings and 576×18×10 pixel heads)"],
+    ["STORAGE", "data contracts (SSTORE2): 214,048 int8 bytes in 9 locked contracts"],
     ["TRAINING", "trained offchain on the CryptoPunks image set; 95.77% pixel accuracy"],
-    ["OUTPUT", "576 palette indexes — a 24×24 reconstruction of the source punk"]
+    ["OUTPUT", "576 palette indexes: a 24×24 reconstruction of the source punk"]
   ],
-  "description": "Slonks redraws all 10,000 CryptoPunks with a small model that lives on Ethereum. For each pixel, the model scores 18 candidate colors against a learned 10-byte embedding. The best score wins. The weights fill nine data contracts and can never change. The model runs inside Ethereum. The pixels the model gets wrong are the art.",
+  "description": "Slonks redraws all 10,000 CryptoPunks, a set of 24×24 pixel portraits, with a small model on Ethereum. The model learned 10 numbers for each punk. For each pixel, it uses these numbers to score 18 candidate colors, and the best score wins. Nine data contracts store the weights, and nobody can change them. The model runs inside Ethereum. The pixels that the model gets wrong are the art.",
   "call": {
     "calldata": "0x045776c00000000000000000000000000000000000000000000000000000000000000000",
     "expectedReturnBytes": 640,
-    "note": "renderSourcePixels(punkId) — runs the model for the selected punk and returns 576 palette indexes, one per pixel.",
+    "note": "renderSourcePixels(punkId) runs the model for the selected punk and returns 576 palette indexes, one for each pixel.",
     "input": {
       "kind": "uint",
       "label": "PUNK NUMBER",

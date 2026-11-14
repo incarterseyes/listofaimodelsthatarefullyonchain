@@ -6,21 +6,21 @@
   "month": 2,
   "address": "0x99a9B7c1116f9ceEB1652de04d5969CcE509B069",
   "facts": [
-    ["TYPE", "coordinate MLP (CPPN) — 5-32-32-32-32-32-32-3, ReLU"],
-    ["SIZE", "5,571 parameters (5,376 weights + 195 biases)"],
-    ["STORAGE", "data contracts — plain number arrays in 7 locked script chunks on the Art Blocks core"],
-    ["OUTPUT", "an RGB color per (x, y) coordinate; some works use palette coloring instead"]
+    ["TYPE", "network that maps a position to a color (coordinate MLP, CPPN); layers 5-32-32-32-32-32-32-3, ReLU"],
+    ["SIZE", "5,571 parameters (5,376 weights and 195 biases)"],
+    ["STORAGE", "data contracts: plain numbers in 7 locked program parts on the Art Blocks core contract"],
+    ["OUTPUT", "an RGB color for each (x, y) position; some works use palette colors instead"]
   ],
-  "description": "Aragnation draws abstract compositions with a watercolor look. A small neural network learned to map each (x, y) position to a color. Its weights sit as plain numbers inside the project script, in seven locked data chunks on Ethereum. Your browser reads the script from Ethereum and runs it. Some works use palettes instead of the network.",
+  "description": "Aragnation draws abstract pictures with a watercolor look. A small neural network learned to give a color to each (x, y) position in a picture. Its weights are plain numbers inside the project's program. Ethereum stores the program in seven parts that nobody can change. On the project site, your browser reads the program from Ethereum and runs it. Some works use color palettes instead of the network.",
   "call": {
     "calldata": "0x8c3c9cdd00000000000000000000000000000000000000000000000000000000000001910000000000000000000000000000000000000000000000000000000000000003",
     "expectedReturnBytes": 10304,
-    "note": "projectScriptByIndex(401, part) — reads one part of the onchain program. Part 3 contains model weights.",
+    "note": "projectScriptByIndex(401, part) reads one part of the onchain program. Part 3 contains the model weights.",
     "input": {
       "kind": "uint",
       "label": "PROGRAM PART",
       "example": "3",
-      "hint": "Choose a part from 0 to 6. This reads program text; it does not draw an artwork.",
+      "hint": "Choose a part from 0 to 6. The live check shows program text. It does not draw an artwork.",
       "word": 1,
       "max": "6"
     },
@@ -28,7 +28,7 @@
   },
   "preview": {
     "kind": "text",
-    "note": "This is one part of the stored program. The project site runs the full program to draw the artwork."
+    "note": "This is one part of the stored program. On the project site, your browser runs the full program to draw the artwork."
   },
   "links": [
     { "label": "SITE", "url": "https://www.artblocks.io/collections/presents/projects/0x99a9b7c1116f9ceeb1652de04d5969cce509b069/401" },

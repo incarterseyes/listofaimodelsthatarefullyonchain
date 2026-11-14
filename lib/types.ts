@@ -1,7 +1,7 @@
 export type PreviewFieldType = "bool" | "uint8" | "uint256" | "int256";
 
-// Declares how to decode the call's verified return bytes into a
-// human-readable preview. Rendering happens in components/OutputPreview.tsx.
+// Declares how to decode the returned bytes of a passed live check into a
+// preview that a person can read. components/OutputPreview.tsx shows it.
 export type OutputPreview =
   | { kind: "grayscale-image"; width: number; height: number; note?: string }
   | {
@@ -39,8 +39,8 @@ export interface ModelEntry {
     expectedReturnBytes: number;
     note: string;
     input?: CallInput;
-    // Custom inputs may change the encoded return length. CI still checks
-    // the exact expectedReturnBytes of the reproducible example above.
+    // A custom input can change the length of the encoded result. CI still
+    // checks the exact expectedReturnBytes of the registered example above.
     manualReturn?: ReturnShape;
   };
   links: { label: string; url: string }[];

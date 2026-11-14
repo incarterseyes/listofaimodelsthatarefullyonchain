@@ -22,9 +22,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Deterministic registry and code checks
+      - name: Registry and code checks
         run: npm run check
       - name: Build static site
         run: npm run build
-      - name: Strict live contract verification
+      - name: Live check of every entry
         run: npm run verify

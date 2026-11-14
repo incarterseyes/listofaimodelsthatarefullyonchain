@@ -7,15 +7,15 @@
   "address": "0xbDF5A7F5e5AE18eE580139297C63a89fc1d18B5f",
   "facts": [
     ["TYPE", "compressed decoder network"],
-    ["SIZE", "32-number latent, 4 conv layers; one network in each of 256 contracts"],
+    ["SIZE", "32 input numbers (latent) and 4 convolution layers; one network in each of 256 contracts"],
     ["STORAGE", "each contract's own bytecode; int8, Huffman-compressed"],
     ["OUTPUT", "32×32 grayscale image, 1,024 bytes"]
   ],
-  "description": "This work is 256 contracts on Ethereum. Each contract holds one seed and one compressed neural network in its own code. A call to artificial() runs the network inside Ethereum and returns a 32×32 grayscale image (1024 bytes). The contract computes the image at call time and stores no image. The address here is one example piece; a factory deployed all 256.",
+  "description": "This work is 256 contracts on Ethereum. Each contract holds one seed and one compressed neural network in its own code. A call to the contract runs the network inside Ethereum and returns a 32×32 grayscale image of 1,024 bytes. The contract computes the image during the call and stores no image. The address on this page is one of the 256 contracts. Another contract, called a factory, created all 256.",
   "call": {
     "calldata": "0xcb95aabc",
     "expectedReturnBytes": 1088,
-    "note": "artificial() — returns a 32×32 image as 1024 pixel bytes (1088 raw bytes with ABI framing)"
+    "note": "artificial() runs the network and returns a 32×32 image as 1,024 pixel bytes. The raw result has 1,088 bytes, because the Ethereum result format adds 64 bytes before the pixels."
   },
   "preview": {
     "kind": "grayscale-image",

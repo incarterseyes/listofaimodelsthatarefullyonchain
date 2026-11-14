@@ -140,6 +140,7 @@ a:hover{color:var(--theme-focused-foreground)}
 }
 
 .card-body{margin-top:calc(var(--theme-line-height-base) / -2)}
+.card-body>.text:first-child{margin-top:0}
 
 /* ── SimpleTable ────────────────────────────── */
 
@@ -165,21 +166,21 @@ table.simple thead th{
   border-bottom:1px solid var(--theme-border-subdued);
 }
 table.simple tbody th{color:var(--theme-text)}
+table.simple.wrap tbody th{vertical-align:top}
+table.simple.wrap td{white-space:normal;padding-right:0}
 
 /* ── Accordion ──────────────────────────────── */
 
-.accordion{
-  margin-bottom:calc(var(--theme-line-height-base) / 2);
-  scroll-margin-top:1ch;
-}
+.accordion{scroll-margin-top:1ch}
+.accordion[open]{margin-bottom:calc(var(--theme-line-height-base) / 2)}
 
 .accordion-summary{
   display:flex;
   align-items:center;
   width:100%;
-  min-height:44px;
+  min-height:calc(var(--theme-line-height-base) * 1.5);
   color:var(--theme-text);
-  padding:calc(var(--theme-line-height-base) / 2) 0;
+  padding:calc(var(--theme-line-height-base) / 4) 0;
   cursor:pointer;
   list-style:none;
 }
