@@ -7,21 +7,21 @@
   "address": "0x65e9A5BbC1B26C0833B232355534cC404b0e69D4",
   "facts": [
     ["TYPE", "GAN image generator (DCGAN-style)"],
-    ["SIZE", "≈2,900 parameters"],
+    ["SIZE", "about 2,900 parameters"],
     ["STORAGE", "contract storage; int16 fixed-point"],
     ["TRAINING", "trained offchain on pepe images, then written into the contract"],
     ["OUTPUT", "three 5×5 frames, built into an animated GIF inside Ethereum"]
   ],
-  "description": "This GAN generator draws animated pepes inside Ethereum. A call to tokenURI() takes three seeds from the token id, runs the network three times, and builds an animated 5×5 GIF from the three frames. The artist trained the weights offchain and wrote them into contract storage. The weights, the network, and the GIF encoder all live at one address. The image exists nowhere else.",
+  "description": "This contract draws small animated pictures of Pepe the Frog inside Ethereum. It uses a GAN generator, a type of neural network that generates images. For each token ID, the contract takes three seeds and runs the network three times. Then it builds an animated 5×5 GIF from the three frames. The artist trained the weights offchain and wrote them into contract storage. The weights, the network, and the GIF encoder are all at one address. The contract builds the image during each call and stores no image.",
   "call": {
     "calldata": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000001",
     "expectedReturnBytes": 5536,
-    "note": "tokenURI(tokenId) — runs the generator three times and builds the animated GIF inside Ethereum.",
+    "note": "tokenURI(tokenId) runs the generator three times and builds the animated GIF inside Ethereum.",
     "input": {
       "kind": "uint",
       "label": "TOKEN ID",
       "example": "1",
-      "hint": "Enter a token ID. The generator can also draw IDs that have not been minted.",
+      "hint": "Enter a token ID. The generator can also draw IDs that nobody has minted (created) yet.",
       "word": 0,
       "max": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
     },

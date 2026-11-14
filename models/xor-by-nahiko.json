@@ -6,16 +6,16 @@
   "month": 8,
   "address": "0x2A648cb23D3ADf1BB171Fabc0119eA3eb951841f",
   "facts": [
-    ["TYPE", "two-layer neural network, 2-2-1 (MLP)"],
+    ["TYPE", "two-layer neural network: 2 inputs, 2 hidden neurons, 1 output (MLP)"],
     ["SIZE", "3 neurons"],
     ["STORAGE", "fixed values in contract storage"],
     ["OUTPUT", "the XOR result as one boolean"]
   ],
-  "description": "Three neurons in two layers compute XOR. The artist minted this work in August 2021 as a one-token NFT. The artist and the collector each set one input. The network turns the two inputs into yin, yang, or a blend. The weights are fixed values in the contract; anyone can read them. isYingYang() runs the model fully inside Ethereum.",
+  "description": "Three neurons in two layers compute XOR. XOR is a logic rule: the output is true when exactly one of the two inputs is true. The artist minted (created) this work in August 2021 as an NFT with one token. The artist and the collector each set one input. The network turns the two inputs into yin, yang, or a blend. The weights are fixed values in the contract, and anyone can read them. The model runs fully inside Ethereum.",
   "call": {
     "calldata": "0xffcc9883",
     "expectedReturnBytes": 32,
-    "note": "isYingYang() — runs the model on the two stored inputs and returns the XOR output as a bool"
+    "note": "isYingYang() runs the model on the two stored inputs and returns the XOR result as true or false."
   },
   "preview": {
     "kind": "fields",

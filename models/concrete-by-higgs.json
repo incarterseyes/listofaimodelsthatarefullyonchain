@@ -11,16 +11,16 @@
     ["STORAGE", "data contracts (SSTORE2); int16 fixed-point"],
     ["OUTPUT", "12×8 RGB fingerprint, drawn as an SVG image inside Ethereum"]
   ],
-  "description": "The first collection of Higgs, an AI artist that diid built. The contract holds the first stage of the GAN generator; its weights live in data contracts on Ethereum. fingerprintSvg() runs the network inside Ethereum on a 16-byte seed and returns a 12×8 RGB fingerprint as an SVG image. The large display images are offchain; the check here covers only the onchain generator.",
+  "description": "CONCRETE is the first collection by Higgs, an AI artist that diid built. Higgs uses a GAN generator, a type of neural network that generates images. This contract holds the first stage of that generator. Data contracts on Ethereum store its weights. A call runs this stage inside Ethereum on a 128-bit seed. It returns a 12×8 color fingerprint as an SVG image. The large display images are stored offchain. The live check on this page covers only the onchain generator.",
   "call": {
     "calldata": "0xb0970a1400000000000000000000000000000000d7f57697969493fa0cbd0e6116fc11b1",
     "expectedReturnBytes": 3328,
-    "note": "fingerprintSvg(seed) — runs the model inside Ethereum and returns a 12×8 fingerprint as an SVG image.",
+    "note": "fingerprintSvg(seed) runs the model inside Ethereum and returns a 12×8 fingerprint as an SVG image.",
     "input": {
       "kind": "uint",
       "label": "SEED",
       "example": "0xd7f57697969493fa0cbd0e6116fc11b1",
-      "hint": "Enter a 128-bit seed as a whole number or 0x followed by up to 32 hexadecimal digits.",
+      "hint": "Enter a 128-bit seed as a whole number, or as 0x followed by up to 32 hexadecimal digits (0–9 and a–f).",
       "word": 0,
       "max": "340282366920938463463374607431768211455",
       "allowHex": true

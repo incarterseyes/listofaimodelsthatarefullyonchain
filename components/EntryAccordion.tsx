@@ -35,7 +35,7 @@ export function EntryAccordion({ entry }: { entry: ModelEntry }) {
               ))}
             </p>
           </Card>
-          <Card title="VERIFICATION" headingLevel={3}>
+          <Card title="LIVE CHECK" headingLevel={3}>
             <CallContractButton
               target={{
                 slug: entry.slug,

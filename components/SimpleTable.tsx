@@ -5,20 +5,22 @@ export function SimpleTable({
   header,
   rows,
   firstColumnHeader = false,
+  wrap = false,
 }: {
   caption: string;
   header?: string[];
   rows: ReactNode[][];
   firstColumnHeader?: boolean;
+  wrap?: boolean;
 }) {
   return (
     <div
       className="table-scroll"
       role="region"
-      aria-label={`${caption}; scroll horizontally for more columns`}
+      aria-label={`${caption}. Scroll sideways to see more columns.`}
       tabIndex={0}
     >
-      <table className="simple">
+      <table className={wrap ? "simple wrap" : "simple"}>
         <caption className="sr-only">{caption}</caption>
         {header && (
           <thead>

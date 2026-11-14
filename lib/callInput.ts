@@ -11,7 +11,7 @@ function parseUint(raw: string, max: bigint, allowHex = false): bigint {
   const pattern = allowHex ? /^(?:[0-9]+|0x[0-9a-fA-F]+)$/ : /^[0-9]+$/;
   if (value.length > 78 || !pattern.test(value)) {
     throw new Error(allowHex
-      ? "Enter a whole number or a hexadecimal seed starting with 0x."
+      ? "Enter a whole number, or a hexadecimal number that starts with 0x."
       : "Enter a whole number, using digits only.");
   }
   const number = BigInt(value);
@@ -30,8 +30,8 @@ function encodeInput(calldata: `0x${string}`, input: CallInput, raw: string): `0
     return `${calldata.slice(0, start)}${word(value)}${calldata.slice(start + 64)}` as `0x${string}`;
   }
   if (input.kind === "text") {
-    // Preserve exactly what the visitor typed; each entry defines its own
-    // alphabet and error message. Patterns are checked at registry load time.
+    // Keep exactly what the visitor typed. Each entry defines its own alphabet
+    // and error message. The registry checks each pattern when it loads.
     if (!new RegExp(input.pattern, "u").test(raw)) {
       throw new Error(input.patternMessage);
     }
@@ -57,8 +57,9 @@ export function prepareCall(target: CallTarget, raw: string): PreparedCallTarget
   if (!input) return target;
   if (raw.length > 10_000) throw new Error("The input is too long.");
   const calldata = encodeInput(target.call.calldata, input, raw);
-  // An example still gets the original exact-size check, even when entered
-  // with equivalent spelling (leading zeroes, hexadecimal, other separators).
+  // The registered example always gets the exact-size check. This is true
+  // even when the visitor types it in an equivalent form: leading zeroes,
+  // hexadecimal, or other separators.
   const useShape = calldata.toLowerCase() !== target.call.calldata.toLowerCase()
     && target.call.manualReturn;
   return {

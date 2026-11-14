@@ -8,19 +8,19 @@
   "facts": [
     ["TYPE", "two-layer echo-state network"],
     ["SIZE", "20 hidden neurons, 4 inputs"],
-    ["STORAGE", "derived at read time — each block's weights come from live market activity, not stored"],
+    ["STORAGE", "derived at read time: each block's weights come from live market activity and are not stored"],
     ["OUTPUT", "one deterministic sentence per block"]
   ],
-  "description": "This network reads the market itself. Its hidden layers are two baskets of live token markets. Each block, it derives fresh weights from the trade activity of those tokens. Ethereum stores the renderer program; your browser runs it. The output is one sentence per block, from a 299-word vocabulary. stateAt() returns the exact state at any past block, so anyone can compute each sentence again.",
+  "description": "This network has no fixed weights. Its hidden layers are two groups of live token markets. Ethereum adds data in numbered groups called blocks. For each new block, the network derives new weights from the trading activity of those tokens. Ethereum stores the program that builds the network and writes its output, and your browser runs it. The output is one sentence for each block, from a 299-word vocabulary. The contract returns the saved state for a past block, so anyone can compute that sentence again.",
   "call": {
     "calldata": "0xeff86f130000000000000000000000000000000000000000000000000000000001869f00",
     "expectedReturnBytes": 416,
-    "note": "stateAt(blockNumber) — returns the saved inputs and mood for the selected block. The renderer uses these to rebuild the network.",
+    "note": "stateAt(blockNumber) returns the saved inputs and mood for the selected block. The project’s program uses these values to rebuild the network.",
     "input": {
       "kind": "uint",
       "label": "BLOCK NUMBER",
       "example": "25599744",
-      "hint": "Enter an Ethereum block number. This reads saved model state; it does not generate the sentence.",
+      "hint": "Enter an Ethereum block number. The live check shows saved model state. It does not write the sentence.",
       "word": 0,
       "max": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
     },
@@ -28,7 +28,7 @@
   },
   "preview": {
     "kind": "market-state",
-    "note": "The project’s renderer uses these saved values to rebuild the network and its sentence in your browser."
+    "note": "The project’s program uses these saved values to rebuild the network and its sentence in your browser."
   },
   "links": [
     { "label": "SITE", "url": "https://felixfelixfelix.com/tmit" },

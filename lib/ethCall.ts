@@ -1,11 +1,11 @@
 import type { PreparedCallTarget, ReturnShape } from "./types";
 import { decodePreview } from "./preview";
 
-// Ethereum mainnet endpoints; the quorum below requires >= 2 to agree.
-// Entries that decode an image inside the EVM need more than the 50M gas some
-// public nodes allow one eth_call, and the same host can answer from a capped
-// backend on one request and an uncapped one on the next. The list is wide
-// enough that two endpoints still run those calls to the end.
+// Ethereum mainnet endpoints. The quorum below requires at least two to agree.
+// Some entries decode an image inside the EVM and need more than 50M gas.
+// Some public endpoints allow only 50M gas for one eth_call. One host can also
+// send one request to a capped backend and the next to an uncapped backend.
+// The list is long enough that two endpoints still finish those calls.
 export const RPC_URLS = [
   "https://ethereum-rpc.publicnode.com",
   "https://rpc.mevblocker.io",
@@ -97,7 +97,7 @@ async function rpcRequest(
     }
 
     if (!response) {
-      throw new EndpointError("RPC returned no response");
+      throw new EndpointError("the server returned no response");
     }
     if (!response.ok) {
       throw new EndpointError(`HTTP ${response.status}`);
@@ -107,11 +107,11 @@ async function rpcRequest(
     try {
       payload = await response.json();
     } catch {
-      throw new EndpointError("RPC returned invalid JSON");
+      throw new EndpointError("the server returned invalid JSON");
     }
 
     if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-      throw new EndpointError("RPC returned an invalid response");
+      throw new EndpointError("the server returned an invalid response");
     }
 
     const record = payload as Record<string, unknown>;
@@ -122,13 +122,13 @@ async function rpcRequest(
       record.id !== 1 ||
       hasResult === hasError
     ) {
-      throw new EndpointError("RPC returned an invalid JSON-RPC envelope");
+      throw new EndpointError("the server returned an invalid JSON-RPC envelope");
     }
 
     if (hasError) {
       const error = record.error;
       if (!error || typeof error !== "object" || Array.isArray(error)) {
-        throw new EndpointError("RPC returned an invalid error");
+        throw new EndpointError("the server returned an invalid error");
       }
       const code = "code" in error && typeof error.code === "number" ? error.code : 0;
       const message =
@@ -170,7 +170,7 @@ type ReturnedResult = Extract<VerifiedResult, { status: "returned" }> & {
   blockNumber: Hex;
   providers: number;
   // Endpoints that agreed on the block and the bytecode but refused to run the
-  // call at all. Reported, never counted as providers.
+  // call. The result reports them and does not count them as providers.
   refusals?: string[];
 };
 
@@ -198,7 +198,7 @@ async function probeEndpoint(url: string): Promise<bigint> {
   );
   if (reportedChainId !== BigInt(CHAIN_ID)) {
     throw new EndpointError(
-      `RPC reported chain ${reportedChainId}; expected ${CHAIN_ID}`,
+      `the server reported chain ${reportedChainId}, but the live check needs chain ${CHAIN_ID}`,
     );
   }
 
@@ -296,6 +296,20 @@ function outcomeKey(result: VerifiedResult): string {
   }
 }
 
+function byteCount(count: number): string {
+  return count === 1 ? "1 byte" : `${count} bytes`;
+}
+
+const SHAPE_NAMES: Record<ReturnShape, string> = {
+  text: "program text",
+  svg: "an SVG image",
+  "token-uri": "token metadata with an embedded image",
+  "market-state": "saved model state",
+};
+
+const REFUSAL_HEADING =
+  "these servers agreed on the block and the contract code, but refused to run the call:";
+
 function summarizeOutcome(result: VerifiedResult): string {
   switch (result.status) {
     case "returned": {
@@ -303,12 +317,12 @@ function summarizeOutcome(result: VerifiedResult): string {
         result.bytes.length <= 22
           ? result.bytes
           : `${result.bytes.slice(0, 12)}…${result.bytes.slice(-8)}`;
-      return `returned ${result.byteLength} bytes (${preview})`;
+      return `returned ${byteCount(result.byteLength)} (${preview})`;
     }
     case "empty":
       return "returned no bytes";
     case "mismatch":
-      return `returned ${result.actualBytes} bytes; expected ${result.expectedBytes}`;
+      return `returned ${byteCount(result.actualBytes)}, but the entry expects ${byteCount(result.expectedBytes)}`;
     case "no-code":
       return "reported no contract code";
     case "reverted":
@@ -335,7 +349,7 @@ type EndpointCheck =
 
 function summarizeCheck(check: EndpointCheck, blockTag: Hex): string {
   if ("error" in check) {
-    return `${endpointName(check.url)}: unavailable — ${check.error}`;
+    return `${endpointName(check.url)}: unavailable (${check.error})`;
   }
   return `${endpointName(check.url)}: block ${BigInt(blockTag)} (${check.blockHash.slice(0, 12)}…), ${summarizeOutcome(check.result)}`;
 }
@@ -398,18 +412,19 @@ export async function performCall(entry: PreparedCallTarget): Promise<CallResult
     };
   }
 
-  // The chain view has to match everywhere: a different block hash or a
-  // different bytecode is a real disagreement about state, never tolerated.
+  // Every endpoint must report the same block hash and the same bytecode.
+  // A difference in either one is a real disagreement about state and fails
+  // the check.
   const chainKeys = completed.map(
     ({ blockHash, code }) => `${blockHash.toLowerCase()}:${code.toLowerCase()}`,
   );
 
-  // An endpoint that refuses to execute is not a second opinion about state.
-  // Public nodes cap eth_call gas, so a heavy decode can be rejected by one
-  // provider while the others run it to the end. Set those refusals aside when
-  // the rest agree, and report them alongside the result. A contract that
-  // really reverts reverts on every endpoint, so `executed` is empty there and
-  // the revert is still reported as a failure.
+  // An endpoint that refuses to run the call gives no result, so it cannot
+  // confirm or contradict the others. Public endpoints cap eth_call gas, so one
+  // endpoint can reject a heavy decode while the others finish it. When the
+  // others agree, set those refusals aside and report them with the result.
+  // A contract that really reverts does so on every endpoint. Then `executed`
+  // is empty, and the revert is still reported as a failure.
   const executed = completed.filter(({ result }) => result.status !== "reverted");
   const quorum = executed.length >= 2 ? executed : completed;
   const refusals = completed
@@ -443,8 +458,8 @@ export async function performCall(entry: PreparedCallTarget): Promise<CallResult
       providers: quorum.length,
       ...(refusals.length > 0 ? { refusals } : {}),
     };
-    // The entire payload already agrees across providers. Validate its shape
-    // once, after both the agreement and quorum checks have passed.
+    // The providers already agree on the complete payload. Validate its shape
+    // once, after the agreement check and the quorum check pass.
     if (entry.call.returnShape && !decodePreview({ kind: entry.call.returnShape }, returned.bytes)) {
       return { ...returned, status: "invalid-output", expectedShape: entry.call.returnShape };
     }
@@ -459,21 +474,16 @@ export interface CallDescription {
   details?: string[];
 }
 
-// Single source of the user-facing copy for every outcome, shared by the
-// browser button and scripts/verify-models.ts.
+// The one source of the visitor-facing text for every outcome. The browser
+// button and scripts/verify-models.ts both use it.
 export function describeResult(result: CallResult): CallDescription {
   switch (result.status) {
     case "returned":
       return {
         ok: true,
-        message: `passed: ${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} that the contract code exists and the call returns the same ${result.byteLength} bytes.`,
+        message: `passed: ${result.providers} public Ethereum servers returned the same contract code and the same ${result.byteLength}-byte result at block ${BigInt(result.blockNumber)}.`,
         ...(result.refusals
-          ? {
-              details: [
-                "these servers agreed on the block and the contract code, but refused to run the call:",
-                ...result.refusals,
-              ],
-            }
+          ? { details: [REFUSAL_HEADING, ...result.refusals] }
           : {}),
       };
     case "empty":
@@ -481,16 +491,16 @@ export function describeResult(result: CallResult): CallDescription {
     case "mismatch":
       return {
         ok: false,
-        message: `failed: the call returned ${result.actualBytes} bytes; the entry expects ${result.expectedBytes}.`,
+        message: `failed: the call returned ${byteCount(result.actualBytes)}, but the entry expects ${byteCount(result.expectedBytes)}.`,
       };
     case "invalid-output":
       return {
         ok: false,
-        message: "failed: the returned bytes do not match this model's expected output format.",
+        message: "failed: the returned bytes do not match the output format that this entry expects.",
         details: [
-          `Expected output format: ${result.expectedShape}.`,
-          `${result.providers} public Ethereum servers agreed at block ${BigInt(result.blockNumber)} on ${result.byteLength} returned bytes.`,
-          ...(result.refusals ?? []),
+          `Expected output format: ${SHAPE_NAMES[result.expectedShape]}.`,
+          `${result.providers} public Ethereum servers returned the same ${byteCount(result.byteLength)} at block ${BigInt(result.blockNumber)}.`,
+          ...(result.refusals ? [REFUSAL_HEADING, ...result.refusals] : []),
         ],
       };
     case "no-code":
@@ -501,7 +511,7 @@ export function describeResult(result: CallResult): CallDescription {
     case "reverted":
       return {
         ok: false,
-        message: `failed: the contract rejected the call: ${result.reason}`,
+        message: `failed: the contract rejected the call. Reason: ${result.reason}`,
       };
     case "disagreement":
       return {
@@ -513,13 +523,13 @@ export function describeResult(result: CallResult): CallDescription {
       return {
         ok: false,
         message:
-          "not confirmed: fewer than two public Ethereum servers completed the same check.",
+          "not confirmed: only one public Ethereum server completed the call. A live check needs two servers that agree.",
         details: result.observations,
       };
     case "unreachable":
       return {
         ok: false,
-        message: `could not complete the check: ${result.message}`,
+        message: `could not complete the live check: ${result.message}`,
       };
   }
 }

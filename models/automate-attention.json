@@ -7,20 +7,20 @@
   "address": "0x5F8E7D750E75b44747C058A204D8DEa0D18fA5d3",
   "facts": [
     ["TYPE", "5-layer transformer language model (Llama-style)"],
-    ["SIZE", "dim 48, hidden 128, 8 heads, 2,048-token vocabulary"],
+    ["SIZE", "dimension 48, hidden size 128, 8 attention heads, 2,048-token vocabulary"],
     ["STORAGE", "data contracts; int8 quantized"],
     ["OUTPUT", "one aphorism per NFT, drawn as an SVG image inside Ethereum"]
   ],
-  "description": "This contract is a complete transformer language model that runs inside Ethereum. Data contracts on Ethereum store its weights. A companion NFT contract calls the model to write one permanent aphorism for each token. The model also draws the text as an SVG image inside Ethereum. The address here is the language model itself.",
+  "description": "This contract is a complete language model that runs inside Ethereum. A language model predicts the next token, which is a word or a part of a word. This model uses the transformer design. Data contracts on Ethereum store its weights. A companion NFT contract calls the model to write one permanent aphorism, a short saying, for each NFT. The model also draws the text as an SVG image inside Ethereum. The address on this page is the language model itself.",
   "call": {
     "calldata": "0xdf6ef8a2000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
     "expectedReturnBytes": 65600,
-    "note": "logits(tokens) — runs the model on your token IDs and returns scores for all 2048 vocabulary tokens.",
+    "note": "logits(tokens) runs the model on your token IDs. It returns one score for each of the 2,048 tokens in the vocabulary.",
     "input": {
       "kind": "uint-array",
       "label": "VOCABULARY TOKEN IDS",
       "example": "1",
-      "hint": "Enter IDs from 0 to 2047, separated by spaces or commas. Limit: 512 IDs. Long inputs may exceed public server limits.",
+      "hint": "Enter token IDs from 0 to 2047, separated by spaces or commas. A token is a word or a part of a word, and each token has an ID. You can enter up to 512 IDs. Public Ethereum servers can refuse a long input because it needs too much computation.",
       "maxValue": 2047,
       "maxItems": 512
     }
@@ -28,7 +28,7 @@
   "preview": {
     "kind": "logits",
     "topK": 5,
-    "note": "The most likely next tokens. Token IDs become text only with the project's off-chain vocabulary."
+    "note": "These tokens have the highest scores, so the model rates them as the most likely next tokens. The vocabulary that turns token IDs into text is stored offchain."
   },
   "links": [
     { "label": "SITE", "url": "https://attention.diid.art" },

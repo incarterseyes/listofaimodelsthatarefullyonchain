@@ -58,13 +58,13 @@ export function CallContractButton({ target }: { target: CallTarget }) {
   }
 
   let line: React.ReactNode =
-    "The check reads the contract code and runs the call on public Ethereum servers.";
+    "The live check asks several public Ethereum servers for the contract code and for the result of one call. At least two servers must answer, and their answers must match.";
   let className = "text out";
   let rawResult: Extract<CallResult, { status: "returned" | "invalid-output" }> | null = null;
   let observations: string[] | null = null;
 
   if (state.phase === "calling") {
-    line = "checking ETHEREUM...";
+    line = "asking public Ethereum servers…";
   } else if (state.phase === "done") {
     const result = state.result;
     const described = describeResult(result);
@@ -91,7 +91,7 @@ export function CallContractButton({ target }: { target: CallTarget }) {
             autoCapitalize="off"
             spellCheck={false}
             value={inputValue}
-            placeholder={`e.g. ${input.example}`}
+            placeholder={`Example: ${input.example}`}
             disabled={state.phase === "calling"}
             aria-describedby={`${inputId}-hint${inputError ? ` ${inputId}-error` : ""}`}
             aria-invalid={Boolean(inputError)}
@@ -136,7 +136,7 @@ export function CallContractButton({ target }: { target: CallTarget }) {
 
         return (
           <p className={rawResult.status === "returned" ? "text out raw-result" : "text out"}>
-            <span className="sr-only">Raw return bytes: </span>
+            <span className="sr-only">Returned bytes: </span>
             <span id={bytesId}>{visibleBytes}</span>
             {isLong && (
               <>

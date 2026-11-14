@@ -3,7 +3,7 @@ import "./globals.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
 const DESCRIPTION =
-  "A list of neural networks stored fully on Ethereum mainnet. Every entry has a contract address and a live check that anyone can run.";
+  "A list of neural networks whose weights and programs are stored fully on Ethereum mainnet. Each entry has a contract address and a live check that anyone can run.";
 
 const SITE_NAME = "listofaimodelsthatarefullyonchain.com";
 

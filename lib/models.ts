@@ -8,11 +8,11 @@ import { prepareCall } from "./callInput";
 const ajv = new Ajv2020({ allErrors: true });
 const matchesSchema = ajv.compile(schema);
 
-// Fixed facts vocabulary: the questions a first-time reader asks, answered in
-// one fixed order so every entry reads the same way. TRAINING is the one
-// optional row. Values lead with plain words; the precise technical term
-// follows in parentheses. ADDRESS/YEAR are never facts — the site renders
-// those rows from the top-level fields.
+// The fixed facts vocabulary. The facts answer a first-time reader's questions
+// in one fixed order, so every entry reads the same way. TRAINING is the only
+// optional row. A value starts with plain words, and the precise technical
+// term follows in parentheses. ADDRESS and YEAR are never facts, because the
+// site shows those rows from the top-level fields.
 export const REQUIRED_FACT_LABELS = ["TYPE", "SIZE", "STORAGE", "OUTPUT"] as const;
 export const OPTIONAL_FACT_LABELS = ["TRAINING"] as const;
 export const FACT_ORDER = [
@@ -22,7 +22,8 @@ export const FACT_ORDER = [
   "TRAINING",
   "OUTPUT",
 ] as const;
-// Every STORAGE value must name where the weights physically live.
+// Every STORAGE value must name where the weights come from. "derived at
+// read time" covers weights that the model calculates and does not store.
 export const STORAGE_LOCATIONS = [
   "contract storage",
   "data contracts",
@@ -34,9 +35,9 @@ const FACT_LABELS = new Set<string>([
   ...OPTIONAL_FACT_LABELS,
 ]);
 
-// Fixed links vocabulary, same idea as facts: every entry offers the same
+// The fixed links vocabulary. As with facts, every entry offers the same
 // links in the same order. CONTRACT is required and always points at the
-// entry's address on evm.now, so readers land in one explorer everywhere.
+// entry's address on evm.now, so every entry opens in the same explorer.
 export const LINK_ORDER = ["SITE", "ABOUT", "CONTRACT"] as const;
 export function contractLinkUrl(address: string): string {
   return `https://evm.now/address/${address}`;
@@ -135,7 +136,8 @@ function semanticProblems(
         );
       }
     } else if (expected % 32 !== 0) {
-      // words, svg, and token-uri all decode 32-byte-word-aligned ABI data.
+      // words, svg, token-uri, text, and market-state all decode ABI data
+      // in 32-byte words.
       problems.push(
         `${preview.kind} preview requires a multiple of 32 return bytes but expectedReturnBytes is ${expected}`,
       );
@@ -223,7 +225,7 @@ export function parseModelEntry(
   return entry;
 }
 
-// Build-time only: load and validate the registry before it reaches the page.
+// For build time only. Load and validate the registry before the page uses it.
 export function loadModels(root = process.cwd()): ModelEntry[] {
   const dir = path.join(root, "models");
   const files = fs

@@ -1,12 +1,12 @@
 # Model date evidence
 
 `year` and `month` record when the model was released on Ethereum mainnet.
-For dedicated model contracts, use the creation transaction timestamp (UTC).
-For projects on shared contracts, use the project release date; the core
-contract can predate the model.
+For a model with its own contract, use the UTC time of the transaction that
+created the contract. For a project on a shared contract, use the project
+release date. The core contract can be older than the model.
 
-The registry sorts by year, month, then slug for ties. Add date evidence here
-when adding a model.
+The registry sorts by year, then month, then slug. When you add a model, add
+its date evidence here.
 
 | Model | Date | Evidence |
 | --- | --- | --- |

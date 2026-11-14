@@ -6,21 +6,21 @@
   "month": 8,
   "address": "0x788Ee0B4Fb97657Cc2F35829d19C0f129c349B5a",
   "facts": [
-    ["TYPE", "convolutional image decoder (4 conv layers, two output heads)"],
-    ["SIZE", "1,512 conv weights (int16) plus 110,592 stored latent values"],
-    ["STORAGE", "data contracts (SSTORE2) — weights, activation tables, and 16 painting latents"],
-    ["OUTPUT", "one 192×144 indexed-color BMP, computed inside the EVM"]
+    ["TYPE", "convolutional image decoder (4 convolution layers, two output heads)"],
+    ["SIZE", "1,512 convolution weights (int16) plus 110,592 stored fragment values (latents)"],
+    ["STORAGE", "data contracts (SSTORE2): weights, activation tables, and the fragments (latents) of 16 paintings"],
+    ["OUTPUT", "one 192×144 indexed-color BMP image, computed inside Ethereum"]
   ],
-  "description": "remanence stores sixteen paintings on Ethereum as compressed fragments. A small neural decoder turns fragments back into a picture. The decoder weights and the fragments are in data contracts. The model runs inside Ethereum: one read-only call runs every layer and returns a finished image. Collectors combine fragments to restore a painting, or mix paintings into a chimera.",
+  "description": "remanence stores sixteen paintings on Ethereum as compressed fragments. A small neural network, called a decoder, turns fragments back into a picture. The decoder weights and the fragments are in data contracts. The model runs inside Ethereum. One read-only call runs every layer and returns a finished image. Collectors combine fragments to restore a painting, or mix paintings into a hybrid picture (a chimera).",
   "call": {
     "calldata": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000065",
     "expectedReturnBytes": 138464,
-    "note": "tokenURI(tokenId) — runs the decoder on the selected token’s fragments and returns its image as token metadata.",
+    "note": "tokenURI(tokenId) runs the decoder on the fragments of the selected token and returns the image as token metadata.",
     "input": {
       "kind": "uint",
       "label": "TOKEN ID",
       "example": "101",
-      "hint": "Enter an existing token ID. Burned tokens and IDs that have not been minted cannot return an image.",
+      "hint": "Enter the ID of a token that exists. A token that nobody has minted (created), or that its owner burned (destroyed), cannot return an image.",
       "word": 0,
       "max": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
     },
@@ -28,7 +28,7 @@
   },
   "preview": {
     "kind": "token-uri",
-    "note": "Ethereum computes this image from the selected token’s fragments. If its owner burns the token, this call stops working."
+    "note": "Ethereum computes this image from the fragments of the selected token. If the owner burns (destroys) the token, this call stops returning an image."
   },
   "links": [
     { "label": "SITE", "url": "https://remanence.diid.art/" },

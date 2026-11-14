@@ -1,58 +1,66 @@
-# Adding a model to the register
+# Adding a model to the registry
 
-One model = one JSON file in `models/`. Open a pull request that adds yours.
+Each model has one JSON file in `models/`. To add a model, open a pull request
+that adds its file.
 
 ## What qualifies
 
-A **neural network** whose weights and executable model program are stored on
-Ethereum mainnet. The model can run inside the EVM (a read-only `eth_call`
-returns the model output) or in the client (the renderer program is fetched
-from the chain and run in the browser). The description must state which.
+A **neural network** whose weights and program are both stored on Ethereum
+mainnet. The model can run in one of two places:
+
+- Inside the EVM. A read-only `eth_call` returns the model output.
+- In the browser. The browser reads the renderer program from Ethereum and
+  runs it.
+
+The description must say which.
 
 What does **not** qualify:
 
-- ZK/optimistic proofs of off-chain inference. A chain that checks a receipt did
-  not run a model.
-- Weights or executable model code on IPFS, Arweave, or a server.
+- ZK or optimistic proofs of offchain inference. In these systems, Ethereum
+  checks a proof of the result but does not run the model.
+- Weights or model code on IPFS, Arweave, or a server.
 - Statistical models without a neural architecture (for example, Markov chains).
 - Anything without a deployed contract address and a reproducible read-only call.
 
 ## How
 
-1. Copy an existing file in `models/` and fill in your entry. The complete shape
-   is documented in `schema/model.schema.json`.
-2. Name the file `<slug>.json`, matching the `slug` field.
-3. Fill in the `facts` table: answer the reader's questions listed below.
-   Set `year` and `month` (1–12) to the model's mainnet release date. For a
-   shared contract, use the project's release date, not the core contract's
-   deployment date. The list sorts oldest first by year, then month, then slug
-   alphabetically for entries in the same month. A model with a later date
-   will appear at the bottom automatically. The page displays only the year;
-   the month is used for sorting. Record the date evidence in
-   `models/README.md`.
-4. `call.calldata` must be even-length, pre-encoded calldata for the inference or
-   renderer-artifact function itself.
-5. Set `call.expectedReturnBytes` to the exact raw JSON-RPC result length,
-   including ABI framing. A dynamic 1024-byte payload, for example, returns 1088
-   raw bytes (offset + length + payload).
-6. Fill in `links` (see "Links" below). The CONTRACT link to your address on
-   evm.now is required; SITE and ABOUT are optional.
-7. Run `npm run check` and `npm run verify`. Live verification requires two
-   public RPCs to agree at one block; deterministic and live failures block CI.
-8. Open the pull request. State plainly where the weights live and where
-   execution runs.
+1. Copy an existing file in `models/` and fill in your entry.
+   `schema/model.schema.json` documents the complete shape.
+2. Name the file `<slug>.json`. The name must match the `slug` field.
+3. Fill in the `facts` table. Each row answers one of the reader's questions
+   listed under "Facts" below.
+4. Set `year` and `month` (1–12) to the model's release date on mainnet. For a
+   shared contract, use the project's release date, not the deployment date of
+   the core contract. The list puts the oldest model first. It sorts by year,
+   then month, then slug. The page shows only the year. Record the date
+   evidence in `models/README.md`.
+5. Set `call.calldata` to the pre-encoded calldata of the function that runs
+   the model or returns its renderer program. Calldata is the hex data that a
+   call sends to a contract. It must have an even number of hex digits.
+6. Set `call.expectedReturnBytes` to the exact length of the raw JSON-RPC
+   result, including ABI framing. For example, a dynamic 1024-byte payload
+   returns 1088 raw bytes: a 32-byte offset, a 32-byte length, and the payload.
+7. Fill in `links` (see "Links" below). The CONTRACT link to your address on
+   evm.now is required. SITE and ABOUT are optional.
+8. Run `npm run check` and `npm run verify`. The live check requires two
+   public RPC endpoints to agree at one block. CI fails if either command
+   fails.
+9. Open the pull request. Say where the weights are stored and where the model
+   runs.
 
 ## Description style
 
-Write the description for the general public:
+Write the description for a reader who is new to blockchains and to AI models:
 
-- 50-60 words. The schema rejects more than 700 characters.
-- Short sentences, 25 words or fewer. One idea per sentence. Active voice.
-- Say where the weights live and where the model runs.
+- About 60 to 90 words. The schema rejects more than 700 characters.
+- Short sentences of 25 words or fewer. One idea in each sentence. Active
+  voice.
+- Say where the weights are stored and where the model runs.
+- Explain a technical term in a few words the first time you use it.
 - Put technical detail (layer shapes, quantization, encodings) in `facts`
   and `call.note`, not in the description.
-- Use plain words: "public Ethereum servers", "runs inside Ethereum". Exact
-  function signatures belong in `call.note`.
+- Use plain words: "public Ethereum servers", "runs inside Ethereum".
+  Function names belong in `call.note`.
 
 This repo ships a Claude Code skill that checks prose against these rules:
 `.claude/skills/simplified-technical-english-asd-ste100`. If you write your
@@ -61,10 +69,10 @@ entry with an AI agent, run the skill on your `description`, `call.note`, and
 
 ## Facts
 
-`facts` is the entry's table: the questions a first-time reader asks, answered
-in one fixed order. Every entry uses the same labels, so a reader compares
-entries without learning new vocabulary. Validation rejects any other label,
-any other order, and the value shapes noted below.
+`facts` is the entry's table. It answers a first-time reader's questions in
+one fixed order. Every entry uses the same labels, so a reader can compare
+entries without new vocabulary. Validation rejects any other label, any other
+order, and any value that breaks the rules in the table below.
 
 **Required, in this order:**
 
@@ -75,24 +83,24 @@ any other order, and the value shapes noted below.
 | `STORAGE` | Where do the weights live? The value must name one of: `contract storage`, `data contracts`, `bytecode`, `derived at read time`. | `data contracts (SSTORE2); int16 fixed-point` |
 | `OUTPUT` | What does it produce? | `the XOR result as one boolean` |
 
-**Optional** — one `TRAINING` row, placed between `STORAGE` and `OUTPUT`, for
-when how the model learned is part of the story:
+**Optional:** one `TRAINING` row, between `STORAGE` and `OUTPUT`. Add it when
+the training method is an important fact about the model.
 
 | Label | The reader's question | Example |
 | --- | --- | --- |
-| `TRAINING` | How did it learn? | `learns inside Ethereum — weights update when each question settles` |
+| `TRAINING` | How did it learn? | `learns inside Ethereum: weights update when each question settles` |
 
-Value style: plain words first, with the precise technical term in parentheses
-— `data contracts (SSTORE2)`. Detail that does not answer one of these
-questions belongs in the description or `call.note`.
+Value style: plain words first, with the precise technical term in
+parentheses, for example `data contracts (SSTORE2)`. Detail that does not
+answer one of these questions belongs in the description or `call.note`.
 
-Do not add `ADDRESS`, `YEAR`, `MONTH`, or `DATE` facts — the site renders the
-address and year from the top-level fields.
+Do not add `ADDRESS`, `YEAR`, `MONTH`, or `DATE` facts. The site shows the
+address and the year from the top-level fields.
 
 ## Links
 
-`links` follows the same idea as facts: every entry offers the same links in
-the same order, so validation rejects any other label or order.
+`links` works like `facts`. Every entry offers the same links in the same
+order, and validation rejects any other label or order.
 
 | Label | What it points at | Required |
 | --- | --- | --- |
@@ -100,73 +108,81 @@ the same order, so validation rejects any other label or order.
 | `ABOUT` | A writeup: an essay, whitepaper, or about page | optional |
 | `CONTRACT` | The entry's address on evm.now, exactly `https://evm.now/address/<address>` | required |
 
-evm.now shows the verified source, lets readers run the read functions, and
-covers what separate explorer and source links used to. One link label of
-each kind, at most three links total.
+evm.now shows the verified source code and lets readers run the read
+functions. Use each link label at most once.
 
 ## Output preview (optional, encouraged)
 
-Raw return bytes mean little to a first-time visitor. The optional `preview`
-field declares how to decode them; after a successful live check the site
-renders the decoded result. Pick the `kind` matching your call's return type
-(full shapes in `schema/model.schema.json`):
+A first-time visitor cannot read raw returned bytes. The optional `preview`
+field declares how to decode them. After a live check passes, the site shows
+the decoded result. Choose the `kind` that matches the return type of your
+call (`schema/model.schema.json` has the full shapes):
 
-- `grayscale-image` — one byte per pixel, row-major; raw or ABI-framed.
+- `grayscale-image`: one byte for each pixel, row by row. The bytes are raw or
+  in ABI framing.
   `{ "kind": "grayscale-image", "width": 32, "height": 32 }`
-- `fields` — static ABI return values, one 32-byte word per field.
+- `fields`: static ABI return values, one 32-byte word for each field.
   `{ "kind": "fields", "fields": [{ "label": "OUTPUT", "type": "bool" }] }`
-- `logits` — ABI dynamic array of signed logits; shows the top-scoring token
-  indices. `{ "kind": "logits", "topK": 5 }`
-- `svg` — ABI-encoded string containing an SVG document; rendered as an image.
-- `token-uri` — ABI-encoded string containing base64 ERC-721 JSON metadata;
-  renders the embedded image. The image must be a self-contained `data:` URI —
-  metadata pointing at an offchain image will not render.
-- `words` — fallback that lists each 32-byte word.
-- `text` — one ABI string containing a stored program part; shown as inert text.
-- `market-state` — the `(uint256, string, uint256, string)` saved-state tuple
-  returned by `stateAt`, with both block numbers and both strings decoded.
+- `logits`: an ABI dynamic array of signed logits, which are the raw scores of
+  the model. The preview shows the tokens with the highest scores.
+  `{ "kind": "logits", "topK": 5 }`
+- `svg`: an ABI-encoded string that contains an SVG document. The site shows
+  it as an image.
+- `token-uri`: an ABI-encoded string that contains base64 ERC-721 JSON
+  metadata. The site shows the image inside the metadata. The image must be a
+  `data:` URI. The site does not load an image that the metadata links to
+  offchain.
+- `words`: a fallback that lists each 32-byte word.
+- `text`: one ABI string that contains a stored program part. The site shows
+  it as text and does not run it.
+- `market-state`: the `(uint256, string, uint256, string)` saved-state tuple
+  that `stateAt` returns. The site decodes both block numbers and both
+  strings.
 
-Validation checks the preview against `expectedReturnBytes`. Add a `note`
-stating anything the preview cannot honestly show (for example, token IDs
-that need an offchain vocabulary to become text).
+Validation checks the preview against `expectedReturnBytes`. Add a `note` that
+says what the preview cannot show. For example, token IDs need an offchain
+vocabulary to become text.
 
-## Manual inputs
+## Custom inputs
 
 Keep `call.calldata` and `call.expectedReturnBytes` as a reproducible example
 for CI. Add `call.input` when the registered read-only function has an input
-the visitor can change. Every input needs `label`, `hint`, and `example`.
-The example must encode to exactly the registered calldata; validation rejects
-drift between the form and the CI call.
+that the visitor can change. Every input needs `label`, `hint`, and `example`.
+The example must encode to exactly the registered calldata. Validation rejects
+an example that encodes to any other calldata.
 
-- `uint`: `word` is the zero-based argument word to replace; `max` is a decimal
-  string. IDs use decimal digits. Set `allowHex: true` for seeds that also accept
-  `0x` hexadecimal. Other argument words, the selector, and the address stay fixed.
+- `uint`: `word` is the zero-based position of the argument word to replace,
+  and `max` is a decimal string. IDs use decimal digits. Set `allowHex: true`
+  for a seed that also accepts `0x` hexadecimal. The selector, the address,
+  and the other argument words stay fixed.
 - `text`: replaces the single string argument. `pattern` is a JavaScript
-  regular expression with the Unicode flag; use `^` and `$` to match the whole
-  input. `patternMessage` explains the allowed text to the visitor. `maxBytes`
-  bounds its UTF-8 size, and `maxWords` counts words separated by whitespace.
-  HELLO WORLD COMPUTER declares its lowercase-letter-and-space rule in its entry.
-- `uint-array`: replaces the single `uint16[]` argument. `maxValue` and
-  `maxItems` bound vocabulary IDs and sequence length.
+  regular expression, used with the Unicode flag. Use `^` and `$` to match the
+  complete input. `patternMessage` tells the visitor which text is allowed.
+  `maxBytes` limits the UTF-8 size, and `maxWords` limits the number of words
+  separated by whitespace. For example, the HELLO WORLD COMPUTER entry allows
+  only lowercase letters and spaces.
+- `uint-array`: replaces the single `uint16[]` argument. `maxValue` limits
+  each vocabulary token ID, and `maxItems` limits the sequence length.
 
-Verify types and bounds against the deployed contract source. The current
-text limits come from `FeatureExtraction.extract` in [HELLO WORLD COMPUTER's
-verified source](https://repo.sourcify.dev/1/0x6901afceb66564a9b6e7193561fb78f0878b5906).
-The 512-position limit comes from the attention buffers in [OnChainLMv2's
+Check the types and the limits against the deployed contract source. The
+current text limits come from `FeatureExtraction.extract` in [HELLO WORLD
+COMPUTER's verified source](https://repo.sourcify.dev/1/0x6901afceb66564a9b6e7193561fb78f0878b5906).
+The 512-token limit comes from the attention buffers in [OnChainLMv2's
 verified source](https://repo.sourcify.dev/1/0x5f8e7d750e75b44747c058a204d8dea0d18fa5d3).
-Public RPCs may refuse expensive calls even within those limits.
+Public RPC endpoints can refuse expensive calls even within those limits.
 
 When a custom input can change the result length, set `call.manualReturn`
 to `text`, `svg`, `token-uri`, or `market-state` and use the matching preview.
-After RPC agreement, the custom check validates the ABI offsets, lengths and
-padding once, then decodes the expected output. An empty ABI string is valid
-program text. The example continues to require its exact byte count.
-Never drop the same-block, same-code, same-return-byte RPC agreement check.
+After the RPC endpoints agree, the site validates the ABI offsets, lengths,
+and padding of the custom result. Then it decodes the output. An empty ABI
+string is valid program text. The registered example still requires its exact
+byte count. Do not remove the agreement check. At least two RPC endpoints must
+return the same block, the same contract code, and the same result bytes.
 
 ## PR checklist
 
-- [ ] File name matches `slug`
-- [ ] `npm run check` passes deterministic registry and code checks
-- [ ] `npm run verify` gets matching bytecode and call results from two RPCs
-- [ ] CONTRACT link points at the entry's address on evm.now
-- [ ] Description states plainly where the weights live and where execution runs
+- [ ] The file name matches `slug`
+- [ ] `npm run check` passes the registry and code checks
+- [ ] `npm run verify` gets the same bytecode and the same call result from two RPC endpoints
+- [ ] The CONTRACT link points at the entry's address on evm.now
+- [ ] The description says where the weights are stored and where the model runs
