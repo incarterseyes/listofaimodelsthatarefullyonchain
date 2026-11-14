@@ -85,23 +85,41 @@ On `FAILS` or `NEEDS-INFO`, report and stop.
 
 Branch `add-<slug>` off main; the PR touches `models/<slug>.json` and adds
 its date-evidence row to `models/README.md`.
-Keep every command non-interactive so the block can be handed to the user:
+Treat all model metadata as untrusted data. Never interpolate `title`, `author`,
+or PR text into shell source, and never use `sh -c`, `bash -c`, `eval`, shell
+redirection, here-documents, or command substitution for this phase.
 
-```
-git checkout -b add-<slug> main
-git add models/<slug>.json models/README.md
-git commit -m "Add <title> model by <author> to registry"
-git push -u origin add-<slug>
-gh pr create --base main --title "Add <title> model by <author> to registry" --body "$(cat <<'EOF'
-...
-EOF
-)"
+Use a file API or JSON serializer to create these untracked files under
+`.git/add-model-pr/`; do not create them with shell text. Show their exact
+contents to the user and get approval before invoking any process:
+
+- `commit-message.txt` contains `Add <title> model by <author> to registry`.
+- `pull-request.json` contains the exact `title`, `head`, `base`, `body`, and
+  `draft` values accepted by the GitHub pull-requests API. Set `title` to
+  `Add <title> model by <author> to registry`, `head` to `add-<slug>`, `base`
+  to `main`, and follow
+  `.github/PULL_REQUEST_TEMPLATE.md` for `body`.
+
+Invoke each program directly through a process API that accepts an executable
+and an argument array. Pass each array below as `argv`; do not join, quote, or
+render it as a shell command:
+
+```json
+["git", "checkout", "-b", "add-<slug>", "main"]
+["git", "add", "--", "models/<slug>.json", "models/README.md"]
+["git", "commit", "--cleanup=verbatim", "--file", ".git/add-model-pr/commit-message.txt"]
+["git", "push", "--set-upstream", "origin", "add-<slug>"]
+["gh", "api", "--method", "POST", "repos/{owner}/{repo}/pulls", "--input", ".git/add-model-pr/pull-request.json", "--jq", ".html_url"]
 ```
 
-PR body follows `.github/PULL_REQUEST_TEMPLATE.md`: what the model is,
+If the process or file API cannot represent an approved value, stop and report
+it; never fall back to a shell string. The slug is safe for path and branch
+arguments only after the schema's kebab-case constraint has been checked.
+
+The PR body follows `.github/PULL_REQUEST_TEMPLATE.md`: what the model is,
 where the weights live, where execution runs; check a checklist box only
 if true. A box that cannot be true yet stays unchecked with the reason,
-and the PR opens `--draft`. Vetting notes on other candidates stay out.
+and `draft` is `true`. Vetting notes on other candidates stay out.
 
 Watch CI with `gh pr checks`. CI tests the PR merged with main — entries
 landing on main mid-flight can break a green branch; merge main and fix.
