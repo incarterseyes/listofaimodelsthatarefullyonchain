@@ -1,0 +1,30 @@
+{
+  "slug": "face-to-face",
+  "title": "FACE TO FACE",
+  "author": "Han Saglam",
+  "year": 2026,
+  "month": 11,
+  "address": "0x3C7F7cd75eD5196dbc815795FdB16997a82d2342",
+  "facts": [
+    ["TYPE", "two-layer network; the 12 strongest of 127 hidden units and one bias unit draw each image"],
+    ["SIZE", "about 135,000 weights; 31 input numbers (latent) and 1,024 output cells"],
+    ["STORAGE", "contract storage of the parent contract; small integers, 32 weights in each storage slot"],
+    ["TRAINING", "learns inside Ethereum: 1,024 lesson transactions of integer backpropagation, 16 passes over 64 portraits"],
+    ["OUTPUT", "32×32 grayscale image in 10 tones, 1,024 bytes"]
+  ],
+  "description": "This work is a neural network that learned inside Ethereum. A parent contract holds the network in its storage. The artist taught it 64 public-domain portraits in 1,024 transactions. In each transaction, the contract drew a portrait from memory, measured the error, and corrected its weights. The parent creates up to 512 child contracts, called Faces. A call to a Face runs the network inside Ethereum with the Face's own seed. It returns a 32×32 grayscale face that the network was never shown. The address on this page is one Face.",
+  "call": {
+    "calldata": "0x1c582cf7",
+    "expectedReturnBytes": 1088,
+    "note": "face() reads the weights from the parent contract FaceToFace and runs the network on the seed. It returns 1,024 pixel bytes. The Ethereum result format adds 64 bytes."
+  },
+  "preview": {
+    "kind": "grayscale-image",
+    "width": 32,
+    "height": 32
+  },
+  "links": [
+    { "label": "SITE", "url": "https://face.han.io" },
+    { "label": "CONTRACT", "url": "https://evm.now/address/0x3C7F7cd75eD5196dbc815795FdB16997a82d2342" }
+  ]
+}
