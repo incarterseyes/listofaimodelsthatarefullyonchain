@@ -21,3 +21,4 @@ its date evidence here.
 | hello-world-computer | 2026-06 | [Creation transaction: 2026-06-20](https://eth.blockscout.com/tx/0x174d62578a947c12b91443004895016f2e499db9d47d0a5c86b058ef16bba139) |
 | the-market-is-talking | 2026-06 | [Creation transaction: 2026-06-24](https://eth.blockscout.com/tx/0x71fce3f4ed8b2b01fe913ede235a70a76759b934308a779b3a0431b826b506be) |
 | remanence | 2026-08 | [Creation transaction: 2026-08-26](https://eth.blockscout.com/tx/0x47e5c0019bc6fa343f20ebbcf95a0667803553e354655696c21c2e283d598904) |
+| face-to-face | 2026-11 | [Creation transaction: 2026-11-25](https://eth.blockscout.com/tx/0xb4b508a128452e5e727573c65090abf7e5880326bc6b865b3009c73edf1e63d2) |
